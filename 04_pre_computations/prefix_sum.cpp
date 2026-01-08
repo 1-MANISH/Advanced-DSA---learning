@@ -20,7 +20,7 @@ int main(){
 		cout << prefixSum[R]-prefixSum[L-1] << endl;
 	}	
 
-	cout << '6'-'2' << endl;	
+	
 	
 	return 0;
 }
