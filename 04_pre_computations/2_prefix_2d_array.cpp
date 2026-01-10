@@ -21,7 +21,7 @@ of square represented by (a,b) top left point and
 */
 
 
-// TC =  (N^2) * O((a+c)*(b+d))
+// TC =  (N^2) * O(Q) => 10^11
 int bruteForce(int &a,int &b , int &c,int &d){
 	int sum = 0;
 	for(int i = a ; i <= c ; i++){
@@ -32,7 +32,7 @@ int bruteForce(int &a,int &b , int &c,int &d){
 	return sum;
 
 }
-
+// TC =  (N^2) + q*O(a+c) => 10^6 + 10^5*10^3 = >10^8
 void slightlyOptimizedUsingPrefixRowSum(int &n){
 	for(int i = 1 ; i <=  n ; i++){
 		prefixRowSum[i][1]=arr[i-1][0];

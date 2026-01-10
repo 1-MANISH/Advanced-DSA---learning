@@ -22,7 +22,7 @@ int main(){
 		while(q--){
 			int l,r;
 			cin >> l >> r;
-			// calculate GCD(arr[l...r])
+			// calculate GCD(arr[1...l-1 and r+1...n])
 			int answer = __gcd(forward[l-1],backward[r+1]);
 			// for(int index=0 ; index <=l-1 ; index++){
 			// 	answer = __gcd(answer,arr[index]);
