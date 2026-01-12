@@ -1,42 +1,74 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-void merge(vector<int>&arr,int &s,int &m ,int &e){
-        int len1 = e-s+1;
-        int tempArr[len1];
+/*
 
-        // merge + sorted -into a new array
-        int i = s , j = m+1,index=0;
-        while(i<=m && j<=e){
-            if(arr[i]>arr[j]){
-                tempArr[index++]=arr[j++];
-            }else{
-                tempArr[index++]=arr[i++];
-            }
+TC : O(N^2)
+SC : O(1)
+*/
+void selectionSort(vector<int>&arr,int n){
+    for(int i = 0 ; i <= n-2  ; i++){
+        int minIndex = i;
+        for(int j = i+1 ; j < n ; j++){
+            if(arr[minIndex]>arr[j])minIndex=j;
         }
-        while(i<=m){
-            tempArr[index++]=arr[i++];
-        }
-        while(j<=e){
-            tempArr[index++]=arr[j++];
-        }
-        index=0;
-        // now copy into original one
-        for(int  i = s ; i<=e ; i++){
-            arr[i]=tempArr[index++];
-        }
-
-    }
-void mergeSort(vector<int>& arr, int l, int r) {
-            // code here
-        int m = l+(r-l)/2;
-        if(l<r){
-            mergeSort(arr,l,m);
-            mergeSort(arr,m+1,r);
-            merge(arr,l,m,r);
+        swap(arr[i],arr[minIndex]);
     }
 }
 
+/*
+
+TC : O(N^2)
+SC : O(N)
+*/
+void recursiveSelectionSort(vector<int>&arr,int index,int &n){
+
+    if(index==n-1)return;
+
+    int minIndex = index;
+
+    for(int i = index+1 ; i< n ; i++){
+        if(arr[minIndex]>arr[i])minIndex=i;
+    }
+    swap(arr[minIndex],arr[index]);
+    recursiveSelectionSort(arr,index+1,n);
+}
+
+void merge(vector<int>&arr,int &start,int &mid,int &end){
+
+    int len = end-start+1;
+    int* tempArr = new int[len];
+
+    //merge them
+    int i = start , j =mid+1 , k = 0;
+    while(i<=mid && j <=end){
+        if(arr[i]>arr[j]){
+            tempArr[k++]=arr[j++];
+        }else{
+            tempArr[k++]=arr[i++];
+        }
+    }
+    while(i<=mid ){
+        tempArr[k++]=arr[i++];
+    }
+    while(j <=end){
+        tempArr[k++]=arr[j++];
+    }
+
+    // copy to original
+    for(int index = start ,k  = 0 ; index <=end;index++,k++)arr[index]=tempArr[k];
+    delete[] tempArr;
+  
+
+}
+void mergeSort(vector<int>&arr,int start,int end){
+    if(start<end){
+        int mid = start+(end-start)/2;
+        mergeSort(arr,start,mid);
+        mergeSort(arr,mid+1,end);
+        merge(arr,start,mid,end);
+    }
+}
 
 int main() {
     
@@ -49,7 +81,8 @@ int main() {
     cout << endl;
     mergeSort(arr,0,n-1);
     for(int i = 0 ; i < n ; i++)cout << arr[i] << " ";
-    return 0;
+    cout << endl;
+   
 
 }
 
