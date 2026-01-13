@@ -60,7 +60,12 @@ Iterators
 	or
 	(*itp).first or (*itp).second
 
+	Note : Short way to write in next
+	
+	After c++11 we have more ways to write
+	auto keywords + range based loops
 
+	
 */
 
 void printVector(vector<int>&arr){
