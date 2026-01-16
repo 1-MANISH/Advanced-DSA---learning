@@ -3,7 +3,7 @@ using namespace std;
 int main() {
 	int n;
 	cin >> n;
-	map<int,set<string>>result;
+	map<int,multiset<string>>result;
 	while(n--){
 		string student;
 		int marks;
