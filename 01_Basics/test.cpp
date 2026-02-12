@@ -1,21 +1,21 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-
-
-    long long L, R;
-    cin >> L >> R;
-
-    long long ans = 0;
-
-    // Check powers of two up to 2^60 (> 1e18)
-    for (int k = 0; k <= 60; k++) {
-        long long p = 1LL << k;
-        if (p > R) break;
-        if (p >= L) ans += p;
-    }
-
-    cout << ans << "\n";
-    return 0;
+void findPostion(int &x,int &y){
+    if(x==0 && y==0)cout<< "Origin\n";
+    else if(x==0 && y!=0)cout << "X axis\n";
+    else if(y==0 && x!=0)cout << "Y axis\n";
+    else if(x>0 && y>0)cout << "1st Quadrant\n";
+    else if(x<0 && y>0)cout << "2nd Quadrant\n";
+    else if(x<0 && y< 0) cout << "3rd Quadrant\n";
+    else if(x>0 && y < 0) cout << "4th Quadrant\n";
 }
+
+int main() {
+   int x,y;
+   cin >> x>> y;
+
+   findPostion(x,y);
+}
+
+  
