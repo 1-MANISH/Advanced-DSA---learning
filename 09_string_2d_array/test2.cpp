@@ -3,14 +3,9 @@ using namespace std;
 
 
 int main(){
-	
-    int n,m;
-    cin>>n>>m;
-    vector<vector<int>>arr(n,vector<int>(m,0));
-
-
-        
-
+	string s;
+	cin >>s;
+	cout << s << endl;
 
 	return  0;
 }
