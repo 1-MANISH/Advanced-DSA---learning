@@ -1,4 +1,4 @@
-// K. Subarray Sum Equals X
+// M. Find Subarray with Sum X
 #include<bits/stdc++.h>
 using namespace std;
 
@@ -12,19 +12,17 @@ int main(){
 	for(int i =  0 ; i < n ; i++) cin >> arr[i];
 	unordered_map<long long int,long long int>mp;
 	long long int prev_sum = 0;	
-	mp[0]=1;
+	mp[0]=0;
 	for(int i = 0 ; i < n ; i++){
 		prev_sum+=arr[i];
 		long long int rem = prev_sum-x;
-		// cout << rem <<" : "<<mp[rem] << endl;
-		// cout <<( mp.find(rem)==mp.end()) << endl;
 		bool isPoss = mp.find(rem)==mp.end()?false:true;
 		if(isPoss){
-			cout << "YES\n";
-			return 0;
+		    cout << (mp[rem]==0?1:mp[rem] )<< " "<< i+1 << endl;
+		    return 0;
 		}
-		mp[prev_sum]=i;
+		mp[prev_sum]=i+1;
 	}	
-	cout << "NO\n";
+	cout <<-1<< endl;
 	return  0;
 }
