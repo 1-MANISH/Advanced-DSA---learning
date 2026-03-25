@@ -18,7 +18,7 @@ int main(){
 		long long int rem = prev_sum-x;
 		bool isPoss = mp.find(rem)==mp.end()?false:true;
 		if(isPoss){
-		    cout << (mp[rem]==0?1:mp[rem] )<< " "<< i+1 << endl;
+		    cout << (mp[rem]==0?1:mp[rem]+1 )<< " "<< i+1 << endl;
 		    return 0;
 		}
 		mp[prev_sum]=i+1;

@@ -16,8 +16,8 @@ int main(){
 	for(int i = 0 ; i < n ; i++){
 		prev_sum+=arr[i];
 		long long int rem = prev_sum-x;
-		// cout << rem <<" : "<<mp[rem] << endl;
-		// cout <<( mp.find(rem)==mp.end()) << endl;
+// 		cout << rem <<" : "<<mp[rem] << endl;
+// 		cout <<( mp.find(rem)==mp.end()) << endl;
 		bool isPoss = mp.find(rem)==mp.end()?false:true;
 		if(isPoss){
 			cout << "YES\n";
