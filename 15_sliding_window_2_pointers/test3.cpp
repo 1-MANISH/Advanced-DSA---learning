@@ -13,13 +13,13 @@ void printDistinctInWindowK(vector<int>&arr,int &n,int k){
 	for(int i = 0 ; i < k ; i++){
 		mp[arr[i]]++;
 	}
-	cout <<  mp.size() << endl;
+	cout <<  mp.size() << " ";
 	for(int i = k ; i < n ; i++){
 		if(mp[arr[i-k]]==1)
 			mp.erase(mp.find(arr[i-k]));
 		else mp[arr[i-k]]--;
 		mp[arr[i]]++;
-		cout << mp.size() << endl;
+		cout << mp.size() << " ";
 	}
 }
 

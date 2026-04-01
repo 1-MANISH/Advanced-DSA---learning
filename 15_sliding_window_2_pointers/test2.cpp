@@ -17,10 +17,10 @@ void vowelsInSubStringSizeK(string &str,int &n , int &k){
 	for(int i = 0 ; i< k ; i++){
 		numVowels+=isVowel(str[i]);
 	}	
-	cout << numVowels << endl;
+	cout << numVowels << " ";
 	for(int i = k ; i < n ; i++){
 		numVowels=numVowels+isVowel(str[i])-isVowel(str[i-k]);
-		cout << numVowels << endl;
+		cout << numVowels << " ";
 	}
 }
 

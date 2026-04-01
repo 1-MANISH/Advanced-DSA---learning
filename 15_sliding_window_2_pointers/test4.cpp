@@ -9,8 +9,9 @@ LONGEST SUBARRAY HAVING SUM < X
 using namespace std;
 
 
-int longestSubarrayWithSumLessK(vector<int>&arr,int &n,int &x){
-	int ans = 0 , currentLen = 0 ,currentSum = 0 ,lastIndex= 0 ,currentIndex = 0;
+int longestSubarrayWithSumLessK(vector<int>&arr,int &n,long long int &x){
+	long long int currentSum = 0 ;
+	int ans = 0 , currentLen = 0,lastIndex= 0 ,currentIndex = 0 ;
 	while(currentIndex<n){
 		currentSum+=arr[currentIndex];
 		currentLen++;
@@ -27,7 +28,8 @@ int longestSubarrayWithSumLessK(vector<int>&arr,int &n,int &x){
 
 int main(){
 
-	int n ,x;
+	int n ;
+	long long int x;
 	cin >> n >> x ;
 	vector<int>arr(n);
 	for(int i = 0 ; i< n ; i++)cin >> arr[i];
