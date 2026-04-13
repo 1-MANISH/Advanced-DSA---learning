@@ -16,8 +16,34 @@ A = [0 1 0 2 4 6 3 1 5]
 using namespace std;
 
 
+void printRepeating(vector<int>&arr,int &n){
+	for(int i = 0 ; i < n ; i++){
+		while(arr[i]!=arr[arr[i]]){
+			swap(arr[i],arr[arr[i]]);
+		}
+	}
+	for(int i = 0 ; i < n ; i++){
+		if(arr[i]!=i){
+			cout << "MISS = " << i << endl;
+			if(arr[arr[i]]!=INT_MIN){
+				cout <<"REP = " << arr[i] << endl;
+				arr[arr[i]]=INT_MIN;
+			}
+		}
+	}
+
+}
 
 int main(){
+
+	int n;
+	cin >> n;
+	vector<int>arr(n);
+	for(int i = 0 ; i < n ; i++){
+		cin >> arr[i];
+	}
+	printRepeating(arr,n);
+
 
 	
 
