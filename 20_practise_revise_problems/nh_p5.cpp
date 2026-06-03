@@ -5,10 +5,10 @@ using namespace std;
 
 int main(){
 
-   	int n;
-   	cin >> n;
+    int n;
+    cin >> n;
     int N = 1e6;
-   	vector<bool>prime(N+1,true);
+    vector<bool>prime(N+1,true);
     prime[0]=prime[1]=false;
     for(int i = 2 ; i <=N/i ; i++){
         if(prime[i]){
