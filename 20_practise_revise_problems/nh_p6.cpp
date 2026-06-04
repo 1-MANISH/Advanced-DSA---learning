@@ -5,11 +5,16 @@ using namespace std;
 
 int main(){
 
+
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+    ios::sync_with_stdio(false);
+
    	int n,q;
    	cin >> n>>q;
    	vector<bool>prime(n+1,true);
     prime[0]=prime[1]=false;
-    for(int i = 2 ; i*i <=n ; i++){
+    for(int i = 2 ; i <=n/i ; i++){
         if(prime[i]){
             for(int j = i*i  ; j<=n ; j+=i){
                 prime[j]=false;
@@ -18,7 +23,7 @@ int main(){
     }
 
     vector<int>prefix(n+1,0);
-    for(int i = 2 ;  i <=n+1;i++){
+    for(int i = 2 ;  i <=n;i++){
         prefix[i]=prefix[i-1]+(prime[i]?1:0);
     }
 
