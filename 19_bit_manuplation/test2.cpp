@@ -8,6 +8,7 @@ Print power of 2 <= N
 #include<bits/stdc++.h>
 using namespace std;
 
+// TC = O(N)
 void printPower2(int &n){
         int ans = 1;
         for(int i = 1 ; ans <=n ; i++){
