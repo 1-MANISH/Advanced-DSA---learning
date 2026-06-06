@@ -3,18 +3,18 @@ using namespace std;
 #define ll long long
 
 bool checkBit(ll n,int &i){
-	return ((n & (1<<i)) !=0 ); 
+	return ((n & (1LL<<i)) !=0 ); 
 }
 ll setBit(ll n,int &i){
-	return (n | (1<<i));
+	return (n | (1LL<<i));
 }
 
 ll unSetBit(ll n,int &i){
-  return (n & (~(1<<i)) );
+  return (n & (~(1LL<<i)) );
 }
 
 ll toggleBit(ll n,int &i){
-	return (n ^ (1<<i));
+	return (n ^ (1LL<<i));
 }
 
 int main(){
