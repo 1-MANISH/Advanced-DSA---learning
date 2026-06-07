@@ -1,11 +1,9 @@
-
 #include<bits/stdc++.h>
 using namespace std;
 
-void arrInReverse(vector<int>&arr,int n){
-	if(n<=0)return;
-	cout << arr[n-1] << " ";
-	arrInReverse(arr,n-1);
+int arrMaximum(vector<int>&arr,int n){
+	if(n<=0)return INT_MIN;
+	return max(arr[n-1],arrMaximum(arr,n-1));
 }
 
 int main(){
@@ -15,7 +13,7 @@ int main(){
 	vector<int>arr(n);
 	for(int i = 0 ; i < n ; i++)
 		cin >> arr[i];
-	arrInReverse(arr,n);
+	cout << arrMaximum(arr,n);
 
 
 	return 0;
