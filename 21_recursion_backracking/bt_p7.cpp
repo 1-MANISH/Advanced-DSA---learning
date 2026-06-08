@@ -4,7 +4,31 @@ using namespace std;
 
 void generateParenthesis(int &n,int op,int cp,string &output,vector<string>&ans){
 
+	if(op==n && cp==n){
+		ans.push_back(output);
+		return;
+	}
+
 	
+	if(op>=cp && op<n){
+
+		// take open
+		output.push_back('(');
+		generateParenthesis(n,op+1,cp,output,ans);
+		output.pop_back();
+
+		// take close
+		output.push_back(')');
+		generateParenthesis(n,op,cp+1,output,ans);
+		output.pop_back();
+	}
+	else if(cp<n && cp<op){
+		// take close
+		output.push_back(')');
+		generateParenthesis(n,op,cp+1,output,ans);
+		output.pop_back();
+	}
+
 }
 
 
