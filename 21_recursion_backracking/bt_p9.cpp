@@ -32,6 +32,7 @@ int main(){
 	for(int i  = 0 ; i < c ; i++){
 		cin >> candidates[i];
 	}
+	sort(candidates.begin(),candidates.end());
 
 	vector<vector<int>>ans;
 	vector<int>output;
