@@ -32,6 +32,6 @@ int main(){
 	sort(numbers.begin(),numbers.end(),compare);
 	for(auto &number:numbers)cout << number;
 	
-	return 0;
+	// return 0;
 	
 }
