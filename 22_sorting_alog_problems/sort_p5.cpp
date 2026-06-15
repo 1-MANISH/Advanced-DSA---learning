@@ -3,20 +3,22 @@
 using namespace std;
 #define ll long long
 
+void countPairs(vector<int>& arr, int s, int mid, int e,ll &rPair ) {
+        int i = s, j = mid + 1;
+        int count = 0;
+        while (i <= mid) {
+            while (j <= e && arr[i] > 2LL * arr[j])
+                j++;
+            rPair += j - mid - 1;
+            i++;
+        }
+}
+
 void merge(vector<int>&arr,int &s,int &mid,int &e,ll &rPair){
 
 	int i = s , j = mid+1 , k=s , n = mid , m = e;
-
-	for(int i=s;i<=n;i++)cout << arr[i] << " ";
-	cout << " | " ;
-	for(int i=j;i<=m;i++)cout << arr[i] << " ";
-		cout << endl;
 	vector<int>output;//storing in decreasing order
 	while(i <=n && j <= m ){
-		if( i < j && (arr[i]*1LL > 2*1LL*arr[j]) ){
-			rPair+=0LL+j-mid;
-		}
-
 		if(arr[i]<=arr[j])
 			output.push_back(arr[i++]);
 		else
@@ -39,6 +41,7 @@ void mergeSort(vector<int>&arr,int s,int e,ll &rPair){
 		int m = s+(e-s)/2;
 		mergeSort(arr,s,m,rPair);
 		mergeSort(arr,m+1,e,rPair);
+		countPairs(arr,s,m,e,rPair);
 		merge(arr,s,m,e,rPair);
 	}
 }
