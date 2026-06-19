@@ -44,32 +44,27 @@ public:
             }
         }
     }
-
-    ~LinkedList()
-    {
-        Node* cur = head;
-
-        while(cur)
-        {
-            Node* nxt = cur->next;
-
-            delete cur;
-
-            cur = nxt;
-        }
-    }
 };
 
 /*
     Implement only the function below.
+    Delete the middle node and return the head of the modified list.
+    The middle node is the floor(n / 2)-th node (0-indexed).
 */
 
-void deleteNode(Node* node)
+Node* deleteMiddle(Node* head)
 {
-    Node* temp = node->next;
-    node->val = temp->val;
-    node->next = temp->next;
+    if(head==NULL || head->next==NULL)return NULL;
+    Node* slow = head;
+    Node* fast = head->next->next;
+    while(fast!=NULL && fast->next!=NULL){
+        slow=slow->next;
+        fast=fast->next->next;
+    }
+    Node* temp = slow->next;
+    slow->next = temp->next;
     delete temp;
+    return head;
 }
 
 int main()
@@ -84,19 +79,9 @@ int main()
 
     ll.build(n);
 
-    int pos;
-    cin >> pos;
+    ll.head = deleteMiddle(ll.head);
 
     Node* cur = ll.head;
-
-    while(pos--)
-    {
-        cur = cur->next;
-    }
-
-    deleteNode(cur);
-
-    cur = ll.head;
 
     bool first = true;
 
