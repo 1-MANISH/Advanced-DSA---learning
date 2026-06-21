@@ -57,8 +57,9 @@ public:
     }
 
     int get(int index) {
-        if(index<=0){
-            return head?head->val:-1;
+        if(index<0)return -1;
+        if(index==0){
+            return this->head?this->head->val:-1;
         }
         int cnt = 0 , len = 0;
         Node* temp = this->head ;
@@ -94,11 +95,15 @@ public:
     }
 
     void addAtIndex(int index, int val) {
-        index = index<0 ?0:index;
+        index = index < 0 ? 0 : index;
+        if(this->head==NULL && index>0)
+            return;
+
         if(index==0){
             addAtHead(val);
             return;
         }
+
         int cnt = 0 ,len  = 0;
         Node* temp = this->head;
         Node* ptr = this->head;
@@ -117,16 +122,15 @@ public:
             addAtTail(val);
             return;
         }
-        Node* t = temp->next;
-        temp->next = new Node(val);
-        temp->next->next = t;
-
+        Node* newNode = new Node(val);
+        newNode->next = temp -> next;
+        temp->next = newNode;
 
     }
 
     void deleteAtIndex(int index) {
-        if(head==NULL)return;
-        if(index<=0){
+        if(head==NULL )return;
+        if(index==0){
             Node* temp = this->head;
             this->head = temp->next;
             delete temp;
