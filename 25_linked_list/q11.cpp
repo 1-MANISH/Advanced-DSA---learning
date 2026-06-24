@@ -10,8 +10,8 @@ struct Node {
 class LinkedList {
 public:
     Node* head;
-
-    LinkedList() : head(nullptr) {}
+    int size;
+    LinkedList() : head(nullptr),size(0) {}
 
     void build(int n) {
         Node* tail = nullptr;
@@ -21,6 +21,7 @@ public:
             Node* node = new Node(x);
             if (!head) head = tail = node;
             else tail->next = node, tail = node;
+            size++;
         }
     }
 
@@ -52,106 +53,90 @@ public:
 class MyLinkedList {
 public:
     Node* head;
-    MyLinkedList(Node* head) {
+    int size;
+    MyLinkedList(Node* head,int size=0) {
         this->head=head;
+        this->size=size;
     }
 
     int get(int index) {
-        if(index<0)return -1;
-        if(index==0){
-            return this->head?this->head->val:-1;
+        if(index<0 || index>=size)return -1;
+        int cnt = 0 ;
+        Node* current  = head ;
+        while(cnt<index){
+            cnt++;
+            current  = current ->next;    
         }
-        int cnt = 0 , len = 0;
-        Node* temp = this->head ;
-        Node* ptr = this->head;
-        while(ptr!=NULL){
-            len++;
-            if(cnt<index){
-                cnt++;
-                temp = temp->next;    
-            }
-            ptr=ptr->next;
-        }
-        return index>=len ? -1 :temp->val;
+        return current ?current ->val:-1;
     }
 
     void addAtHead(int val) {
         Node* newNode = new Node(val);
-        newNode->next = this->head;
-        this->head=newNode;
+        newNode->next = head;
+        head=newNode;
+        size++;
     }
 
     void addAtTail(int val) {
-        if(this->head==NULL){
+        if(head==NULL || size==0){
             addAtHead(val);
             return;
         }
-        Node* temp = this->head;
-        while(temp!=NULL && temp->next!=NULL){
-            temp=temp->next;
+        Node* current  = head;
+        while(current!=NULL && current->next!=NULL){
+            current=current->next;
         }
         Node* newNode = new Node(val);
-        temp->next = newNode;
+        current->next = newNode;
+        size++;
     }
 
     void addAtIndex(int index, int val) {
         index = index < 0 ? 0 : index;
-        if(this->head==NULL && index>0)
+        if(index>size)
             return;
 
         if(index==0){
             addAtHead(val);
             return;
         }
-
-        int cnt = 0 ,len  = 0;
-        Node* temp = this->head;
-        Node* ptr = this->head;
-        while(ptr!=NULL){
-            len++;
-            if(cnt<index-1){
-                cnt++;
-                temp=temp->next;
-            }
-            ptr=ptr->next;
-        }
-        if(index>len){
-             return;
-        }
-        if(index==len){
+        if(index==size){
             addAtTail(val);
             return;
         }
-        Node* newNode = new Node(val);
-        newNode->next = temp -> next;
-        temp->next = newNode;
 
+        int cnt = 0 ;
+        Node* current =head;
+        while(cnt<index-1){
+            cnt++;
+            current=current->next;
+        }
+        Node* newNode = new Node(val);
+        Node* temp = current->next;
+        current->next=newNode;
+        newNode->next = temp;
+        size++;
     }
 
     void deleteAtIndex(int index) {
-        if(head==NULL )return;
+        if(head==NULL)return;
+        if(index<0 || index>=size)return;
+        size--;
         if(index==0){
-            Node* temp = this->head;
-            this->head = temp->next;
+            Node* temp = head;
+            head = head->next;
             delete temp;
             return;
         }
-        int cnt =0 ,len = 0 ;
-        Node* temp = this->head;
-        Node* ptr = this->head;
-        while( ptr!=NULL){
-            len++;
-            if(cnt<index-1){
-                temp=temp->next;
-                cnt++;
-            }
-            ptr=ptr->next;
-            
+        Node* current = head;
+        int cnt = 0;
+        while(cnt<index-1){
+            current=current->next;
+            cnt++;
         }
-        if(index>=len)return;
-        Node* t  = temp->next;
-        temp->next = t->next;
-        delete t;
+        Node* temp = current->next;
+        current->next = temp?temp->next:NULL;
+        delete temp;
     }
 
     Node* getHead() {
@@ -169,7 +154,7 @@ int main() {
     LinkedList ll;
     ll.build(n);
 
-    MyLinkedList my(ll.head);
+    MyLinkedList my(ll.head,ll.size);
 
 
     int Q;
