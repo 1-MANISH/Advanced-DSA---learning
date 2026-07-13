@@ -1,0 +1,30 @@
+
+
+EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=
+
+POSTHOG_PROJECT_TOKEN=
+POSTHOG_HOST=
+
+STREAM_API_KEY=mc9aqkmqewrc
+STREAM_API_SECRET=wypc776v9hy6fum3zfqdjngwgr6jx7r3tdvyjsv6a5drzgmqxq9m7y34ratstrpu
+
+# Vision Agent
+# Run `uv run main.py serve` inside vision-agent/
+VISION_AGENT_URL=http://localhost:8000
+
+# OpenAI API key (required for the vision-agent)
+OPENAI_API_KEY=
+
+
+
+---------
+
+https://github.com/karanpratapsingh/system-design
+
+https://www.hellointerview.com/
+
+https://paperdraw.dev/
+
+https://github.com/donnemartin/system-design-primer
+
+techPrep / hellInterview -  videoos
