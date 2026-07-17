@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodexAcademy Tutor — Interactive Workspace</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- KaTeX for Beautiful Math Notation -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .monospace {
+            font-family: 'Fira Code', monospace;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        /* Synced text editor look */
+        #code-editor {
+            caret-color: #10b981;
+            white-space: pre;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col overflow-hidden select-none">
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-900 border-b border-slate-800 px-4 md:px-6 py-3 flex items-center justify-between shrink-0">
+        <div class="flex items-center space-x-3">
+            <div class="bg-indigo-600 p-2 rounded-lg flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+                <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-400 bg-clip-text text-transparent">CodexAcademy</span>
+                <span class="text-xs text-indigo-400 font-semibold ml-2 uppercase tracking-widest hidden sm:inline">PRO Core v3.0</span>
+            </div>
+        </div>
+
+        <!-- Capability Index Tracker -->
+        <div class="flex items-center bg-slate-950 border border-slate-800 rounded-full px-4 py-1.5 space-x-3">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider hidden xs:inline">Capability Index:</span>
+            <div class="flex items-center space-x-2">
+                <!-- Mini visual progress indicator -->
+                <div class="relative w-8 h-8 flex items-center justify-center">
+                    <svg class="w-full h-full transform -rotate-90">
+                        <circle cx="16" cy="16" r="14" stroke="#1e293b" stroke-width="3" fill="transparent" />
+                        <circle id="gauge-circle" cx="16" cy="16" r="14" stroke="#6366f1" stroke-width="3" fill="transparent" 
+                                stroke-dasharray="88" stroke-dashoffset="50" class="transition-all duration-500 ease-out"/>
+                    </svg>
+                    <span id="capability-score-mini" class="absolute text-[10px] font-bold monospace text-indigo-400">45</span>
+                </div>
+                <div class="hidden md:block text-right">
+                    <div class="text-xs font-bold text-indigo-300 monospace">C_user = <span id="capability-val">45.2</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <!-- API Key Controls -->
+            <button onclick="toggleKeySettings()" class="text-xs flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">
+                <i data-lucide="key" class="w-3.5 h-3.5 text-indigo-400"></i>
+                <span id="key-badge-text">Session API Key</span>
+            </button>
+            <button onclick="toggleMathModal()" class="text-xs flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition hidden sm:flex">
+                <i data-lucide="calculator" class="w-3.5 h-3.5"></i>
+                <span>View Evaluation Core</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace Grid -->
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden">
+        
+        <!-- Sidebar: Lesson Navigator & Active Chaos Injector -->
+        <aside class="w-full md:w-80 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0 md:h-full">
+            <!-- Learning Track Header -->
+            <div class="p-4 border-b border-slate-800">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Target Curriculum</h3>
+                <div class="bg-slate-950 border border-slate-800 rounded-lg p-3">
+                    <div class="flex items-center justify-between text-xs text-slate-300 font-semibold mb-1">
+                        <span>API Resilience & Safety</span>
+                        <span id="track-percent">0% Done</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                        <div id="track-progress-bar" class="bg-indigo-500 h-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Topic Generator -->
+            <div class="p-4 border-b border-slate-800 bg-slate-950/30">
+                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-2">Dynamic Topic Architect</h3>
+                <div class="flex space-x-1.5">
+                    <input id="custom-topic-input" type="text" placeholder="e.g. Python SQL injection..." class="flex-1 bg-slate-900 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 placeholder-slate-600" />
+                    <button id="gen-lesson-btn" onclick="generateCustomLesson()" class="bg-indigo-600 hover:bg-indigo-500 text-white p-2 rounded text-xs font-semibold flex items-center justify-center transition">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lessons List -->
+            <div class="flex-1 overflow-y-auto p-3 space-y-2 max-h-[25vh] md:max-h-none" id="lessons-container">
+                <!-- Populated dynamically -->
+            </div>
+
+            <!-- Chaos Injector Interface -->
+            <div class="p-4 border-t border-slate-800 bg-slate-950 hidden md:block">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center space-x-1.5">
+                        <i data-lucide="zap" class="w-4 h-4 text-amber-500 animate-bounce"></i>
+                        <span class="text-xs font-bold text-amber-500 uppercase tracking-wider">Active Chaos Injector</span>
+                    </div>
+                    <span class="text-[10px] text-slate-500 uppercase font-bold">Simulator v3.0</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4 leading-relaxed font-sans">
+                    Force network failures or environment clashes to test robust error handling bounds.
+                </p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button id="chaos-btn-network" onclick="toggleChaos('network')" class="flex items-center justify-center space-x-1 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/50 p-2 rounded text-xs transition duration-150">
+                        <i data-lucide="wifi-off" class="w-3.5 h-3.5 text-amber-500"></i>
+                        <span id="chaos-text-network" class="text-slate-300">Rate Limit</span>
+                    </button>
+                    <button id="chaos-btn-dependency" onclick="toggleChaos('dependency')" class="flex items-center justify-center space-x-1 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-red-500/50 p-2 rounded text-xs transition duration-150">
+                        <i data-lucide="package-x" class="w-3.5 h-3.5 text-red-400"></i>
+                        <span id="chaos-text-dependency" class="text-slate-300">Dep Clash</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center Area: Editor & Terminal -->
+        <section class="flex-1 flex flex-col bg-slate-950 min-w-0 md:h-full">
+            <!-- Code Editor Pane -->
+            <div class="flex-1 flex flex-col min-h-0">
+                <!-- Editor Headers -->
+                <div class="bg-slate-900 border-b border-slate-800 px-4 py-2 flex items-center justify-between shrink-0">
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs px-2.5 py-1 rounded font-semibold monospace flex items-center space-x-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span id="active-filename">server.js</span>
+                        </span>
+                        <span class="text-xs text-slate-500 italic hidden sm:inline">Active Sandbox Workspace</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="resetCurrentLesson()" class="text-xs flex items-center space-x-1.5 text-slate-400 hover:text-white px-2.5 py-1.5 rounded hover:bg-slate-800 transition">
+                            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                            <span>Reset File</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Code Workspace -->
+                <div class="flex-1 relative font-mono text-xs overflow-hidden flex min-h-[200px]">
+                    <!-- Line Numbers gutter -->
+                    <div id="editor-gutter" class="w-12 bg-slate-950 border-r border-slate-900 select-none py-4 text-right pr-3 text-slate-600 monospace leading-6 text-xs">
+                        1
+                    </div>
+                    <!-- Raw Code Editor -->
+                    <textarea id="code-editor" class="flex-1 bg-slate-950/50 p-4 focus:outline-none resize-none monospace text-emerald-400 leading-6 text-xs border-none select-text focus:ring-0" spellcheck="false" oninput="handleCodeChange()" onscroll="syncGutterScroll()"></textarea>
+                </div>
+            </div>
+
+            <!-- WebContainer Interactive Terminal -->
+            <div class="h-64 border-t border-slate-800 bg-slate-950 flex flex-col shrink-0">
+                <div class="bg-slate-900 px-4 py-2 flex items-center justify-between border-b border-slate-800 shrink-0">
+                    <div class="flex items-center space-x-2">
+                        <div class="flex space-x-1">
+                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500/80"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                        </div>
+                        <span class="text-xs text-slate-400 font-bold ml-2 monospace">virtual_sandbox_compiler</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button id="run-code-btn" onclick="runAISandboxCheck()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-1.5 rounded-md flex items-center space-x-1.5 transition shadow-lg shadow-indigo-600/15">
+                            <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                            <span>Execute Sandbox Tests</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="terminal-screen" class="flex-1 p-4 overflow-y-auto monospace text-xs leading-relaxed space-y-1.5 select-text selection:bg-indigo-500/35">
+                    <!-- Terminal logs will update dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Side: AI Copilot Tutor & Live Chat Guidance -->
+        <section class="w-full md:w-96 bg-slate-900 border-l border-slate-800 flex flex-col shrink-0 md:h-full">
+            <!-- Tutor Identity Header -->
+            <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/50 shrink-0">
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <div class="w-10 h-10 rounded-full bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
+                            <i data-lucide="bot" class="w-5 h-5"></i>
+                        </div>
+                        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-slate-900 animate-pulse"></span>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-semibold text-white">Codex Tutor</h4>
+                        <p class="text-[10px] text-emerald-400 font-medium">Cognitive Context Online</p>
+                    </div>
+                </div>
+                <div class="flex flex-col items-end">
+                    <span class="text-[10px] text-indigo-400 uppercase tracking-wider font-bold">API ACTIVE</span>
+                    <span id="system-status-indicator" class="text-[9px] text-slate-500">Standby mode</span>
+                </div>
+            </div>
+
+            <!-- Conversation Engine Space -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 max-h-[300px] md:max-h-none">
+                <!-- Messages populate here -->
+            </div>
+
+            <!-- Adaptive Chat Input Panel -->
+            <div class="p-4 border-t border-slate-800 bg-slate-950 shrink-0">
+                <form id="chat-form" onsubmit="handleSendMessage(event)" class="flex items-center space-x-2">
+                    <input id="chat-input" type="text" placeholder="Ask Codex for a conceptual hint..." class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 placeholder-slate-500" autocomplete="off" />
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 border border-indigo-500 text-white p-2.5 rounded-lg transition duration-150">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                    </button>
+                </form>
+                <div class="mt-2.5 flex items-center justify-between text-[10px] text-slate-500">
+                    <span>* Tutor will guide you rather than spoil code.</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Math Explainer Overlay Modal -->
+    <div id="math-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 max-w-lg w-full rounded-xl p-6 shadow-2xl relative">
+            <button onclick="toggleMathModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="p-2 bg-indigo-500/10 rounded-lg border border-indigo-500/20 text-indigo-400">
+                    <i data-lucide="sparkles" class="w-5 h-5"></i>
+                </div>
+                <h3 class="text-base font-bold text-white">Dynamic Skill Evaluation Algorithm</h3>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                CodexAcademy measures your technical growth using an active feedback loop. Your structural software capability ($C_{\text{user}}$) scales using this integration matrix:
+            </p>
+            
+            <div class="bg-slate-950 border border-slate-800 p-4 rounded-lg flex items-center justify-center mb-4">
+                <div class="text-sm text-indigo-300">
+                    $$C_{\text{user}} = \lim_{\Delta t \to 0} \int \left( \frac{\text{Fixes}_{\text{successful}}(\tau)}{\text{Complexity}_{\text{code}}(\tau) \cdot \Delta t} \right) d\tau$$
+                </div>
+            </div>
+
+            <div class="space-y-3.5 text-xs text-slate-400">
+                <div class="flex items-start space-x-2">
+                    <span class="font-bold text-indigo-400 text-sm leading-none">•</span>
+                    <p><strong class="text-slate-200">Fixes_successful:</strong> Number of automated sandbox compiler suite passes tracked across consecutive challenges.</p>
+                </div>
+                <div class="flex items-start space-x-2">
+                    <span class="font-bold text-indigo-400 text-sm leading-none">•</span>
+                    <p><strong class="text-slate-200">Complexity_code:</strong> Syntax complexity of tasks generated dynamically by the AI architect.</p>
+                </div>
+                <div class="flex items-start space-x-2">
+                    <span class="font-bold text-indigo-400 text-sm leading-none">•</span>
+                    <p><strong class="text-slate-200">Delta t:</strong> Time steps between compilation attempts. Faster resolutions scaling complex structures boost capability velocity.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Key Settings Modal -->
+    <div id="key-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 max-w-md w-full rounded-xl p-6 shadow-2xl relative">
+            <button onclick="toggleKeySettings()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="p-2 bg-indigo-500/10 rounded-lg border border-indigo-500/20 text-indigo-400">
+                    <i data-lucide="key" class="w-5 h-5"></i>
+                </div>
+                <h3 class="text-base font-bold text-white">LLMWiki Core API Settings</h3>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                By default, this application connects seamlessly to the platform environment's pre-configured Gemini session. If you wish to use your own custom credentials, you may configure them below.
+            </p>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Gemini API Key (Optional)</label>
+                    <input id="api-key-input" type="password" placeholder="Enter custom gemini key..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+                </div>
+                <div class="p-3 bg-indigo-950/20 border border-indigo-900/50 rounded-lg text-[11px] text-indigo-300 leading-relaxed">
+                    Leaving this empty will utilize the embedded platform environment configuration safely.
+                </div>
+                <button onclick="saveAPIKey()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2.5 rounded-lg transition">
+                    Save and Apply Configurations
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script Engine -->
+    <script>
+        // System Curriculum Databases
+        const defaultLessons = [
+            {
+                id: 1,
+                title: "Async Error Boundaries",
+                difficulty: "Medium",
+                complexity: 1.8,
+                filename: "server.js",
+                description: "Fix the Express API endpoint that crashes the entire node process on unhandled promise rejections.",
+                initialCode: `const express = require('express');
+const app = express();
+const db = require('./fakeDatabase');
+
+app.get('/user/:id', async (req, res, next) => {
+    // BUG: Missing proper async safety wrapper or try/catch.
+    // An error here will crash the virtual node runtime.
+    const user = await db.fetchUser(req.params.id);
+    
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+    res.json(user);
+});`,
+                tips: [
+                    "Wrap the database query inside an explicit try/catch block.",
+                    "Ensure you capture the exception parameter and pass it downstream using the 'next' handler callback."
+                ]
+            },
+            {
+                id: 2,
+                title: "React Stale State Closures",
+                difficulty: "Hard",
+                complexity: 2.4,
+                filename: "counter.jsx",
+                description: "Analyze the dual-increment layout. Correct the state updater pattern to avoid state synchronization lag.",
+                initialCode: `import React, { useState } from 'react';
+
+export default function Counter() {
+    const [count, setCount] = useState(0);
+
+    const handleIncrementTwice = () => {
+        // BUG: Stale rendering closures trap count.
+        // Direct increments fail under asynchronous render sweeps.
+        setCount(count + 1);
+        setCount(count + 1);
+    };
+
+    return (
+        <button onClick={handleIncrementTwice}>
+            Count is: {count}
+        </button>
+    );
+}`,
+                tips: [
+                    "State setters inside React can accept a callback parameter representing queue-fresh snapshots.",
+                    "Refactor raw increment evaluations into variable callback pointers: setCount(prev => prev + 1)."
+                ]
+            },
+            {
+                id: 3,
+                title: "Insecure JWT Signatures",
+                difficulty: "Critical",
+                complexity: 3.1,
+                filename: "auth.js",
+                description: "Fix a massive security vulnerability in token validations parsing administrative access signatures.",
+                initialCode: `const jwt = require('jsonwebtoken');
+
+function authorizeAdmin(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    if (!token) return res.sendStatus(401);
+
+    // BUG: Standard decoding skips digital cryptosignature validations!
+    // Bad actors can forge claims easily.
+    const payload = jwt.decode(token, process.env.JWT_SECRET_KEY);
+    
+    if (payload && payload.role === 'admin') {
+        req.user = payload;
+        return next();
+    }
+    res.sendStatus(403);
+}`,
+                tips: [
+                    "Never trust JSON web token payloads without authenticating signatures.",
+                    "Swap out decoding helper operations for verify protocols which assert structure authenticity."
+                ]
+            }
+        ];
+
+        // System Runtime State
+        let lessonsList = [...defaultLessons];
+        let currentLessonIndex = 0;
+        let capabilityScore = 45.2;
+        let activeChaos = { network: false, dependency: false };
+        let customApiKey = "";
+        let chatHistory = [];
+
+        // Setup API URLs
+        function getGeminiUrl() {
+            const key = "AQ.Ab8RN6ImCiWzUo_-WHnlxopbd_szr7-xZTkths6ouzAqeQZ6lg" || "";
+            return `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${key}`;
+        }
+
+        // Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            loadLesson(0);
+            renderLessonsSidebar();
+            
+            // Welcome Greeting from tutor agent
+            addTutorMessage(`Welcome to **CodexAcademy Workspace PRO**! ⚡
+
+I have initialized a fully integrated virtual sandbox sandbox for you. 
+
+Choose one of our challenging modules on the left, or **generate a completely customized lesson** by typing any topic at the top (e.g. *SQL injection*, *React custom hooks*). Let's write resilient code!`);
+            
+            updateCapabilityUI();
+        });
+
+        // UI rendering engines
+        function renderLessonsSidebar() {
+            const container = document.getElementById('lessons-container');
+            container.innerHTML = '';
+            
+            lessonsList.forEach((lesson, index) => {
+                const isActive = index === currentLessonIndex;
+                const isSolved = lesson.solved;
+                
+                let activeClasses = isActive 
+                    ? 'border-indigo-500 bg-indigo-950/20 shadow-lg shadow-indigo-500/5' 
+                    : 'border-slate-800 hover:border-slate-700 bg-slate-950/40';
+                
+                let badgeColor = "bg-slate-800 text-slate-400";
+                if(lesson.difficulty === "Medium" || lesson.difficulty === "easy") badgeColor = "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20";
+                if(lesson.difficulty === "Hard" || lesson.difficulty === "medium") badgeColor = "bg-amber-500/10 text-amber-400 border border-amber-500/20";
+                if(lesson.difficulty === "Critical" || lesson.difficulty === "hard") badgeColor = "bg-rose-500/10 text-rose-400 border border-rose-500/20";
+
+                const element = document.createElement('div');
+                element.className = `p-3.5 rounded-xl border transition cursor-pointer flex flex-col space-y-2.5 ${activeClasses}`;
+                element.onclick = () => loadLesson(index);
+                
+                element.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full flex items-center justify-center ${isSolved ? 'bg-emerald-500' : 'bg-slate-700 border border-slate-500'}">
+                                ${isSolved ? '<i data-lucide="check" class="w-1.5 h-1.5 text-slate-950 stroke-[4]"></i>' : ''}
+                            </span>
+                            <h4 class="text-xs font-bold ${isActive ? 'text-white' : 'text-slate-300'}">${lesson.title}</h4>
+                        </div>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded uppercase font-semibold ${badgeColor}">${lesson.difficulty}</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 leading-relaxed">${lesson.description}</p>
+                `;
+                
+                container.appendChild(element);
+            });
+            lucide.createIcons();
+        }
+
+        function loadLesson(index) {
+            currentLessonIndex = index;
+            const lesson = lessonsList[index];
+            
+            document.getElementById('active-filename').innerText = lesson.filename;
+            document.getElementById('code-editor').value = lesson.initialCode;
+            
+            syncGutter();
+            renderLessonsSidebar();
+            
+            // Initialize clear virtual compiler look
+            const term = document.getElementById('terminal-screen');
+            term.innerHTML = `
+                <div class="text-slate-500 monospace">// Node container boot initiated...</div>
+                <div class="text-indigo-400 monospace">Ready: Sandbox workspace synchronized on '/src/${lesson.filename}'</div>
+                <div class="text-slate-400 monospace">Press [Execute Sandbox Tests] to run test assertions using AI compilation feedback.</div>
+            `;
+            
+            // Setup chat history context for active lesson
+            chatHistory = [
+                {
+                    role: "user",
+                    parts: [{ text: `We are working on lesson: ${lesson.title}. Objective: ${lesson.description}.` }]
+                }
+            ];
+        }
+
+        function handleCodeChange() {
+            syncGutter();
+        }
+
+        function syncGutter() {
+            const editor = document.getElementById('code-editor');
+            const gutter = document.getElementById('editor-gutter');
+            const lines = editor.value.split('\n').length;
+            
+            let html = '';
+            for (let i = 1; i <= lines; i++) {
+                html += `${i}<br>`;
+            }
+            gutter.innerHTML = html;
+        }
+
+        function syncGutterScroll() {
+            const editor = document.getElementById('code-editor');
+            const gutter = document.getElementById('editor-gutter');
+            gutter.scrollTop = editor.scrollTop;
+        }
+
+        function resetCurrentLesson() {
+            const lesson = lessonsList[currentLessonIndex];
+            document.getElementById('code-editor').value = lesson.initialCode;
+            syncGutter();
+            addTutorMessage(`Blueprints refreshed for **${lesson.title}**. Workspace is clean!`);
+        }
+
+        // Chaos simulation controls
+        function toggleChaos(type) {
+            activeChaos[type] = !activeChaos[type];
+            const btn = document.getElementById(`chaos-btn-${type}`);
+            const text = document.getElementById(`chaos-text-${type}`);
+            
+            if (activeChaos[type]) {
+                btn.className = "flex items-center justify-center space-x-1 bg-amber-950/40 hover:bg-amber-950/60 border border-amber-500 p-2 rounded text-xs transition duration-150";
+                text.className = "text-amber-400 font-semibold";
+                addTutorMessage(`💥 **Chaos Injection Live**: Enabled simulated **${type === 'network' ? 'Network Outages' : 'Dependency Path Clashing'}** inside compiler engine context.`);
+            } else {
+                btn.className = "flex items-center justify-center space-x-1 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 p-2 rounded text-xs transition duration-150";
+                text.className = "text-slate-300";
+                addTutorMessage(`✓ System environment stabilized. Removed active **${type}** simulation from container config.`);
+            }
+        }
+
+        // Executes Code verification using real Gemini API as automated tester context
+        async function runAISandboxCheck() {
+            const btn = document.getElementById('run-code-btn');
+            const term = document.getElementById('terminal-screen');
+            const code = document.getElementById('code-editor').value;
+            const lesson = lessonsList[currentLessonIndex];
+            
+            btn.disabled = true;
+            btn.innerHTML = `<span class="animate-spin mr-1.5">&#9696;</span> Compiling...`;
+            
+            term.innerHTML = `
+                <div class="text-indigo-400 monospace">⚡ webcontainer_kernel_exec: npm test --silent</div>
+                <div class="text-slate-400 monospace">Mounting virtual environments and dependency trees...</div>
+                <div class="text-slate-500 animate-pulse monospace">Calling AI Sandbox Evaluator for compiler verification...</div>
+            `;
+
+            // Build evaluation prompt
+            const evaluationPrompt = `
+                You are a strict, production-grade automated Sandbox Compiler test runner. Your job is to check if the user's submitted code successfully resolves the bug described in the active lesson.
+                
+                LESSON CONTEXT:
+                Title: ${lesson.title}
+                Objective: ${lesson.description}
+                Buggy Initial Code:
+                ${lesson.initialCode}
+
+                USER SUBMITTED CODE:
+                ${code}
+
+                ENVIRONMENT CHAOS CONFIGURATION:
+                Network Rate Limiting Simulated: ${activeChaos.network ? "ACTIVE (simulating extreme server congestion, packet drops and API rate limit responses)" : "OFF"}
+                Dependency Clashing: ${activeChaos.dependency ? "ACTIVE (simulating mismatched module resolution, system level import crashes)" : "OFF"}
+
+                INSTRUCTIONS:
+                1. Perform a thorough syntax, logic, safety, and security assessment of the submitted code.
+                2. If the user code solves the core problem, mark success as true.
+                3. IMPORTANT: If any Chaos configurations are ACTIVE, they must heavily disrupt the testing run! For example:
+                   - If network chaos is ACTIVE, fail some network/database assertions with rate-limiting warnings, UNLESS the user code explicitly handles retry logic or robust errors gracefully.
+                   - If dependency chaos is ACTIVE, throw a compile-time crash log, unless they have written highly decoupled/safe import safeguards.
+                4. Respond STRICTLY in structured JSON format matching the schema requested below.
+            `;
+
+            try {
+                const response = await fetch(getGeminiUrl(), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: evaluationPrompt }] }],
+                        generationConfig: {
+                            responseMimeType: "application/json",
+                            responseSchema: {
+                                type: "OBJECT",
+                                properties: {
+                                    success: { type: "BOOLEAN" },
+                                    errorDetails: { type: "STRING" },
+                                    testResults: {
+                                        type: "ARRAY",
+                                        items: {
+                                            type: "OBJECT",
+                                            properties: {
+                                                name: { type: "STRING" },
+                                                passed: { type: "BOOLEAN" },
+                                                logs: { type: "STRING" }
+                                            },
+                                            required: ["name", "passed", "logs"]
+                                        }
+                                    },
+                                    complexityScore: { type: "NUMBER" },
+                                    feedback: { type: "STRING" }
+                                },
+                                required: ["success", "errorDetails", "testResults", "complexityScore", "feedback"]
+                            }
+                        }
+                    })
+                });
+
+                const result = await response.json();
+                const output = JSON.parse(result.candidates[0].content.parts[0].text);
+                
+                // Render beautiful sandbox logs
+                term.innerHTML = `
+                    <div class="text-indigo-400 monospace">⚡ webcontainer_kernel_exec: npm test --completed</div>
+                    <div class="h-[1px] bg-slate-800 my-2"></div>
+                `;
+
+                output.testResults.forEach(test => {
+                    const icon = test.passed ? '✓' : '✖';
+                    const color = test.passed ? 'text-emerald-500' : 'text-rose-500';
+                    term.innerHTML += `
+                        <div class="flex items-start space-x-2">
+                            <span class="${color} font-bold monospace">${icon}</span>
+                            <div>
+                                <span class="font-bold text-slate-200">${test.name}</span>
+                                <p class="text-slate-500 text-[11px] leading-relaxed">${test.logs}</p>
+                            </div>
+                        </div>
+                        <div class="h-[1px] bg-slate-900 my-1.5"></div>
+                    `;
+                });
+
+                if (output.success) {
+                    term.innerHTML += `
+                        <div class="mt-2 text-emerald-400 font-bold monospace font-lg">✓ ALL TESTS PASSED SUCCESSFULLY!</div>
+                        <div class="text-slate-400 font-sans mt-1">${output.feedback}</div>
+                    `;
+                    lessonsList[currentLessonIndex].solved = true;
+                    calculateCapabilityIndex(true, output.complexityScore);
+                    addTutorMessage(`🎉 **Success!** ${output.feedback}`);
+                } else {
+                    term.innerHTML += `
+                        <div class="mt-2 text-rose-500 font-bold monospace font-lg">✖ TEST COMPILATION FAILURES ENCOUNTERED</div>
+                        <div class="text-slate-400 font-sans mt-1">${output.errorDetails || output.feedback}</div>
+                    `;
+                    calculateCapabilityIndex(false, output.complexityScore || lesson.complexity);
+                    addTutorMessage(`❌ **Compiler Failure:** The active sandbox execution failed. *Tip:* ${output.feedback}`);
+                }
+
+                updateCapabilityUI();
+                renderLessonsSidebar();
+
+            } catch (err) {
+                console.error(err);
+                term.innerHTML += `
+                    <div class="text-red-500 font-bold monospace mt-2">[COMPILER ERROR] - API Connection Timed Out</div>
+                    <div class="text-slate-500 monospace">Verify that your custom or session API configurations are operational.</div>
+                `;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i data-lucide="play" class="w-3.5 h-3.5 mr-1.5"></i>Execute Sandbox Tests`;
+                lucide.createIcons();
+            }
+        }
+
+        // Generate entirely custom modules based on user requests
+        async function generateCustomLesson() {
+            const btn = document.getElementById('gen-lesson-btn');
+            const input = document.getElementById('custom-topic-input');
+            const topic = input.value.trim();
+
+            if (!topic) return;
+
+            btn.disabled = true;
+            btn.innerHTML = `<span class="animate-spin text-indigo-400">&#9696;</span>`;
+
+            const prompt = `
+                Generate a creative, production-grade code-review & software tutorial sandbox lesson on the topic of: "${topic}".
+                Create buggy code with realistic, difficult vulnerabilities or logic errors that need fixing.
+                Provide a structured JSON output with the requested lesson parameters.
+            `;
+
+            try {
+                const response = await fetch(getGeminiUrl(), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: {
+                            responseMimeType: "application/json",
+                            responseSchema: {
+                                type: "OBJECT",
+                                properties: {
+                                    title: { type: "STRING" },
+                                    difficulty: { type: "STRING" },
+                                    complexity: { type: "NUMBER" },
+                                    filename: { type: "STRING" },
+                                    description: { type: "STRING" },
+                                    initialCode: { type: "STRING" },
+                                    tips: {
+                                        type: "ARRAY",
+                                        items: { type: "STRING" }
+                                    }
+                                },
+                                required: ["title", "difficulty", "complexity", "filename", "description", "initialCode", "tips"]
+                            }
+                        }
+                    })
+                });
+
+                const result = await response.json();
+                const lessonData = JSON.parse(result.candidates[0].content.parts[0].text);
+                
+                lessonData.id = lessonsList.length + 1;
+                lessonData.solved = false;
+
+                lessonsList.push(lessonData);
+                renderLessonsSidebar();
+                loadLesson(lessonsList.length - 1);
+
+                addTutorMessage(`✨ **Infinite Track Generator Active**: I have compiled a custom lesson plan on: **${lessonData.title}**! Let's start coding.`);
+                input.value = "";
+
+            } catch (err) {
+                console.error(err);
+                addTutorMessage(`❌ Failed to compile curriculum on "${topic}". Please verify API credentials.`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i data-lucide="sparkles" class="w-3.5 h-3.5"></i>`;
+                lucide.createIcons();
+            }
+        }
+
+        // Capability calculations
+        function calculateCapabilityIndex(isSuccess, complexity) {
+            let delta = 0;
+            if (isSuccess) {
+                delta = (complexity * 4.2) + Math.random() * 1.5;
+                capabilityScore = Math.min(100, parseFloat((capabilityScore + delta).toFixed(1)));
+            } else {
+                delta = (complexity * 1.2);
+                capabilityScore = Math.max(0, parseFloat((capabilityScore - delta).toFixed(1)));
+            }
+        }
+
+        function updateCapabilityUI() {
+            document.getElementById('capability-val').innerText = capabilityScore.toFixed(1);
+            document.getElementById('capability-score-mini').innerText = Math.round(capabilityScore);
+            
+            const circle = document.getElementById('gauge-circle');
+            const percent = capabilityScore / 100;
+            const dashoffset = 88 - (88 * percent);
+            circle.style.strokeDashoffset = dashoffset;
+            
+            const solvedCount = lessonsList.filter(l => l.solved).length;
+            const progressPct = Math.round((solvedCount / lessonsList.length) * 100);
+            document.getElementById('track-percent').innerText = `${progressPct}% Done`;
+            document.getElementById('track-progress-bar').style.width = `${progressPct}%`;
+        }
+
+        // Chat handlers
+        function addTutorMessage(text) {
+            const chatSpace = document.getElementById('chat-messages');
+            
+            let formattedText = text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code class="monospace bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800 text-indigo-300 text-[11px]">$1</code>');
+
+            const msgDiv = document.createElement('div');
+            msgDiv.className = "flex flex-col space-y-1 items-start max-w-[85%] animate-fade-in";
+            msgDiv.innerHTML = `
+                <span class="text-[9px] text-indigo-400 uppercase tracking-widest font-bold ml-1">Codex Tutor</span>
+                <div class="bg-slate-800 border border-slate-700/70 p-3 rounded-2xl rounded-tl-none text-xs text-slate-200 leading-relaxed shadow-sm">
+                    ${formattedText.replace(/\n/g, '<br>')}
+                </div>
+            `;
+            
+            chatSpace.appendChild(msgDiv);
+            chatSpace.scrollTop = chatSpace.scrollHeight;
+        }
+
+        function addUserMessage(text) {
+            const chatSpace = document.getElementById('chat-messages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = "flex flex-col space-y-1 items-end max-w-[85%] ml-auto";
+            msgDiv.innerHTML = `
+                <span class="text-[9px] text-slate-500 uppercase tracking-widest font-bold mr-1">Developer (You)</span>
+                <div class="bg-indigo-600 border border-indigo-500 p-3 rounded-2xl rounded-tr-none text-xs text-white leading-relaxed shadow-lg">
+                    ${text}
+                </div>
+            `;
+            chatSpace.appendChild(msgDiv);
+            chatSpace.scrollTop = chatSpace.scrollHeight;
+        }
+
+        async function handleSendMessage(event) {
+            event.preventDefault();
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            addUserMessage(msg);
+            input.value = '';
+
+            const status = document.getElementById('system-status-indicator');
+            status.innerText = "Thinking...";
+            status.className = "text-[9px] text-indigo-400 animate-pulse";
+
+            const lesson = lessonsList[currentLessonIndex];
+            const code = document.getElementById('code-editor').value;
+
+            // Maintain context inside Chat history
+            chatHistory.push({ role: "user", parts: [{ text: msg }] });
+
+            const tutorPrompt = `
+                You are 'Codex Tutor', an elite technical architect and software mentor.
+                You are working with a student on the lesson titled "${lesson.title}".
+                Lesson description: ${lesson.description}
+                The user's CURRENT active code in the workspace editor is:
+                \`\`\`
+                ${code}
+                \`\`\`
+
+                SYSTEM DIRECTIVE:
+                1. Never directly output the exact lines of code needed to solve the lesson.
+                2. Instead, guide the user by explaining architectural concepts, asking questions, and pointing out bugs conceptually.
+                3. Keep your advice professional, elite, and highly practical.
+                4. Answer their question: "${msg}" in a concise and friendly manner.
+            `;
+
+            try {
+                const response = await fetch(getGeminiUrl(), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [
+                            ...chatHistory.slice(-4), // maintain recent history
+                            { role: "user", parts: [{ text: tutorPrompt }] }
+                        ]
+                    })
+                });
+
+                const result = await response.json();
+                const tutorResponse = result.candidates[0].content.parts[0].text;
+                addTutorMessage(tutorResponse);
+                
+                chatHistory.push({ role: "model", parts: [{ text: tutorResponse }] });
+
+            } catch (err) {
+                console.error(err);
+                addTutorMessage("⚠️ **Connection Latency**: My conversational nodes could not sync with the engine. Check your API configurations.");
+            } finally {
+                status.innerText = "Standby mode";
+                status.className = "text-[9px] text-slate-500";
+            }
+        }
+
+        // Modal toggling controls
+        function toggleMathModal() {
+            const modal = document.getElementById('math-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function toggleKeySettings() {
+            const modal = document.getElementById('key-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function saveAPIKey() {
+            const val = document.getElementById('api-key-input').value.trim();
+            customApiKey = val;
+            const badge = document.getElementById('key-badge-text');
+            
+            if (val) {
+                badge.innerText = "Custom API Key Active";
+                badge.className = "text-xs font-semibold text-emerald-400";
+            } else {
+                badge.innerText = "Session API Key";
+                badge.className = "text-xs font-semibold text-slate-300";
+            }
+            toggleKeySettings();
+            addTutorMessage("✓ API Key parameters updated successfully.");
+        }
+    </script>
+</body>
+</html>

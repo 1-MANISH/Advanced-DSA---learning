@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+// / SLIDING WINDOW MAX
 // nlogn solution
 class SolutionUsingPriorityQueue {
 public:

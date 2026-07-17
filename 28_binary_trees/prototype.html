@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodexAcademy Tutor — Interactive Workspace</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- KaTeX for Beautiful Math Notation -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .monospace {
+            font-family: 'Fira Code', monospace;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col overflow-hidden select-none">
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-900 border-b border-slate-800 px-6 py-3 flex items-center justify-between shrink-0">
+        <div class="flex items-center space-x-3">
+            <div class="bg-indigo-600 p-2 rounded-lg flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+                <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-400 bg-clip-text text-transparent">CodexAcademy</span>
+                <span class="text-xs text-indigo-400 font-semibold ml-2 uppercase tracking-widest">Active Core</span>
+            </div>
+        </div>
+
+        <!-- Capability Index Tracker -->
+        <div class="flex items-center bg-slate-950 border border-slate-800 rounded-full px-4 py-1.5 space-x-3">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Capability Index:</span>
+            <div class="flex items-center space-x-2">
+                <!-- Mini visual progress indicator -->
+                <div class="relative w-8 h-8 flex items-center justify-center">
+                    <svg class="w-full h-full transform -rotate-90">
+                        <circle cx="16" cy="16" r="14" stroke="#1e293b" stroke-width="3" fill="transparent" />
+                        <circle id="gauge-circle" cx="16" cy="16" r="14" stroke="#6366f1" stroke-width="3" fill="transparent" 
+                                stroke-dasharray="88" stroke-dashoffset="50" class="transition-all duration-500 ease-out"/>
+                    </svg>
+                    <span id="capability-score-mini" class="absolute text-[10px] font-bold monospace text-indigo-400">45</span>
+                </div>
+                <div class="hidden md:block text-right">
+                    <div class="text-xs font-bold text-indigo-300 monospace">C_user = <span id="capability-val">45.2</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <button onclick="toggleMathModal()" class="text-xs flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">
+                <i data-lucide="calculator" class="w-3.5 h-3.5"></i>
+                <span>View Algorithm</span>
+            </button>
+            <div class="flex items-center space-x-2 bg-indigo-950/40 border border-indigo-900/50 px-3 py-1.5 rounded-lg">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-xs text-indigo-200 font-semibold monospace">WebContainer: ONLINE</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace Grid -->
+    <main class="flex-1 flex overflow-hidden">
+        
+        <!-- Sidebar: Lesson Navigator & Active Chaos Injector -->
+        <aside class="w-80 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <!-- Learning Track Header -->
+            <div class="p-4 border-b border-slate-800">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Target Curriculum</h3>
+                <div class="bg-slate-950 border border-slate-800 rounded-lg p-3">
+                    <div class="flex items-center justify-between text-xs text-slate-300 font-semibold mb-1">
+                        <span>API Resilience & Async Safety</span>
+                        <span id="track-percent">33% Done</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                        <div id="track-progress-bar" class="bg-indigo-500 h-full transition-all duration-500" style="width: 33%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lessons List -->
+            <div class="flex-1 overflow-y-auto p-3 space-y-2" id="lessons-container">
+                <!-- Populated by JavaScript -->
+            </div>
+
+            <!-- Chaos Injector Interface -->
+            <div class="p-4 border-t border-slate-800 bg-slate-950">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center space-x-1.5">
+                        <i data-lucide="zap" class="w-4 h-4 text-amber-500 animate-bounce"></i>
+                        <span class="text-xs font-bold text-amber-500 uppercase tracking-wider">Active Chaos Injector</span>
+                    </div>
+                    <span class="text-[10px] text-slate-500 uppercase font-bold">Simulator v2026.1</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+                    Force system defects inside your sandbox environment to stress-test error limits.
+                </p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="triggerChaos('network')" class="flex items-center justify-center space-x-1 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/50 p-2.5 rounded-lg text-xs transition duration-150">
+                        <i data-lucide="wifi-off" class="w-3.5 h-3.5 text-amber-500"></i>
+                        <span class="text-slate-300">Rate Limit</span>
+                    </button>
+                    <button onclick="triggerChaos('dependency')" class="flex items-center justify-center space-x-1 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-red-500/50 p-2.5 rounded-lg text-xs transition duration-150">
+                        <i data-lucide="package-x" class="w-3.5 h-3.5 text-red-400"></i>
+                        <span class="text-slate-300">Dep Clash</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center Area: Editor & Terminal -->
+        <section class="flex-1 flex flex-col bg-slate-950 min-w-0">
+            <!-- Code Editor Pane -->
+            <div class="flex-1 flex flex-col min-h-0">
+                <!-- Editor Headers -->
+                <div class="bg-slate-900 border-b border-slate-800 px-4 py-2 flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs px-2.5 py-1 rounded font-semibold monospace flex items-center space-x-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                            <span id="active-filename">server.js</span>
+                        </span>
+                        <span class="text-xs text-slate-500 italic">Editable Sandbox file</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="resetCurrentLesson()" class="text-xs flex items-center space-x-1.5 text-slate-400 hover:text-white px-2 py-1.5 rounded hover:bg-slate-800 transition">
+                            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                            <span>Reset File</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Code Workspace -->
+                <div class="flex-1 relative font-mono text-sm overflow-hidden flex">
+                    <!-- Line Numbers gutter -->
+                    <div class="w-12 bg-slate-950 border-r border-slate-900 select-none py-4 text-right pr-3 text-slate-600 monospace leading-6 text-xs">
+                        1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18
+                    </div>
+                    <!-- Raw Code Editor -->
+                    <textarea id="code-editor" class="flex-1 bg-slate-950/50 p-4 focus:outline-none resize-none monospace text-emerald-400 leading-6 text-xs border-none select-text" spellcheck="false" oninput="handleCodeChange()"></textarea>
+                </div>
+            </div>
+
+            <!-- WebContainer Interactive Terminal -->
+            <div class="h-64 border-t border-slate-800 bg-slate-950 flex flex-col shrink-0">
+                <div class="bg-slate-900 px-4 py-2 flex items-center justify-between border-b border-slate-800">
+                    <div class="flex items-center space-x-2">
+                        <div class="flex space-x-1">
+                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500/80"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                        </div>
+                        <span class="text-xs text-slate-400 font-bold ml-2 monospace">node_container_terminal</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="runCode()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-1.5 rounded-md flex items-center space-x-1.5 transition shadow-lg shadow-indigo-600/15">
+                            <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                            <span>Execute Sandbox Tests</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="terminal-screen" class="flex-1 p-4 overflow-y-auto monospace text-xs leading-relaxed space-y-1.5">
+                    <!-- Terminal logs will update dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Side: AI Copilot Tutor & Live Chat Guidance -->
+        <section class="w-96 bg-slate-900 border-l border-slate-800 flex flex-col shrink-0">
+            <!-- Tutor Identity Header -->
+            <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/50">
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <div class="w-10 h-10 rounded-full bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
+                            <i data-lucide="bot-lightning" class="w-5 h-5"></i>
+                        </div>
+                        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-slate-900"></span>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-semibold text-white">Codex Tutor</h4>
+                        <p class="text-[10px] text-slate-400 font-medium">Adaptive Memory Active</p>
+                    </div>
+                </div>
+                <div class="flex flex-col items-end">
+                    <span class="text-[10px] text-indigo-400 uppercase tracking-wider font-bold">LLMWiki Core</span>
+                    <span class="text-[10px] text-slate-500">Track ID: ST_901x</span>
+                </div>
+            </div>
+
+            <!-- Conversation Engine Space -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4">
+                <!-- Messages populate here -->
+            </div>
+
+            <!-- Adaptive Chat Input Panel -->
+            <div class="p-4 border-t border-slate-800 bg-slate-950">
+                <form id="chat-form" onsubmit="handleSendMessage(event)" class="flex items-center space-x-2">
+                    <input id="chat-input" type="text" placeholder="Ask Codex for a conceptual hint..." class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 placeholder-slate-500" autocomplete="off" />
+                    <button type="submit" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 hover:text-white p-2 rounded-lg transition duration-150">
+                        <i data-lucide="send-horizontal" class="w-4 h-4"></i>
+                    </button>
+                </form>
+                <div class="mt-2.5 flex items-center justify-between text-[10px] text-slate-500">
+                    <span>* Hints are tuned to avoid spoiling code solutions outright.</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Math Explainer Overlay Modal -->
+    <div id="math-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 max-w-lg w-full rounded-xl p-6 shadow-2xl relative">
+            <button onclick="toggleMathModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="p-2 bg-indigo-500/10 rounded-lg border border-indigo-500/20 text-indigo-400">
+                    <i data-lucide="sparkles" class="w-5 h-5"></i>
+                </div>
+                <h3 class="text-base font-bold text-white">Dynamic Student Evaluation Algorithm</h3>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                To evaluate learning progress contextually and deploy appropriate chaos tasks, CodexAcademy measures the user's software structural capability ($C_{\text{user}}$) in real time using this integration matrix:
+            </p>
+            
+            <div class="bg-slate-950 border border-slate-800 p-4 rounded-lg flex items-center justify-center mb-4">
+                <div class="text-sm text-indigo-300">
+                    $$C_{\text{user}} = \lim_{\Delta t \to 0} \int \left( \frac{\text{Fixes}_{\text{successful}}(\tau)}{\text{Complexity}_{\text{code}}(\tau) \cdot \Delta t} \right) d\tau$$
+                </div>
+            </div>
+
+            <div class="space-y-3.5 text-xs text-slate-400">
+                <div class="flex items-start space-x-2">
+                    <span class="font-bold text-indigo-400 text-sm leading-none">•</span>
+                    <p><strong class="text-slate-200">Fixes_successful:</strong> Tracks successful structural solutions validated by the sandbox test framework over dynamic timelines.</p>
+                </div>
+                <div class="flex items-start space-x-2">
+                    <span class="font-bold text-indigo-400 text-sm leading-none">•</span>
+                    <p><strong class="text-slate-200">Complexity_code:</strong> Computed syntax tree complexity (depth, scope nesting, dependency footprint) of the targeted codebase module.</p>
+                </div>
+                <div class="flex items-start space-x-2">
+                    <span class="font-bold text-indigo-400 text-sm leading-none">•</span>
+                    <p><strong class="text-slate-200">Delta t:</strong> Rate of dynamic error recovery. Faster resolutions scaling complex structures boost capability velocity exponentially.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script Engine -->
+    <script>
+        // System Curriculum Databases
+        const lessons = [
+            {
+                id: 1,
+                title: "Async Error Boundaries",
+                difficulty: "Medium",
+                complexity: 1.8,
+                filename: "server.js",
+                description: "Fix the Express API endpoint that crashes the entire process on unhandled promise rejections.",
+                initialCode: `const express = require('express');
+const app = express();
+const db = require('./fakeDatabase');
+
+app.get('/user/:id', async (req, res, next) => {
+    // BUG: Missing proper async safety wrapper or try/catch.
+    // An error here will crash the virtual node runtime.
+    const user = await db.fetchUser(req.params.id);
+    
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+    res.json(user);
+});`,
+                solutionCheck: (code) => {
+                    const cleanCode = code.replace(/\s+/g, '');
+                    return (cleanCode.includes('try{') && cleanCode.includes('}catch') && cleanCode.includes('next(')) || 
+                           cleanCode.includes('next)(') || 
+                           cleanCode.includes('.catch(next)');
+                },
+                successHint: "Excellent! By introducing structural error handling boundaries (using try/catch routing errors to next(err)), you stop node crashes dead in their tracks.",
+                tips: [
+                    "Wrap the database query inside an explicit try/catch framework.",
+                    "Ensure you capture the exception parameter and pass it downstream using the 'next' handler callback."
+                ]
+            },
+            {
+                id: 2,
+                title: "React Stale State Closures",
+                difficulty: "Hard",
+                complexity: 2.4,
+                filename: "counter.jsx",
+                description: "Analyze the dual-increment layout. Correct the closures pattern to avoid state synchronization lag.",
+                initialCode: `import React, { useState } from 'react';
+
+export default function Counter() {
+    const [count, setCount] = useState(0);
+
+    const handleIncrementTwice = () => {
+        // BUG: Stale rendering closures trap count.
+        // Direct increments fail under asynchronous render sweeps.
+        setCount(count + 1);
+        setCount(count + 1);
+    };
+
+    return (
+        <button onClick={handleIncrementTwice}>
+            Count is: {count}
+        </button>
+    );
+}`,
+                solutionCheck: (code) => {
+                    const cleanCode = code.replace(/\s+/g, '');
+                    return cleanCode.includes('setCount(prev=>') || cleanCode.includes('setCount(count=>') || cleanCode.includes('setCount(p=>');
+                },
+                successHint: "Perfect. Utilizing functional updates (prev => prev + 1) safely reads state values right from the execution queue scheduler.",
+                tips: [
+                    "State setters inside React can accept a callback parameter representing queue-fresh snapshots.",
+                    "Refactor raw increment evaluations into variable callback pointers: setCount(prev => prev + 1)."
+                ]
+            },
+            {
+                id: 3,
+                title: "Insecure JWT Signatures",
+                difficulty: "Critical",
+                complexity: 3.1,
+                filename: "auth.js",
+                description: "Fix a massive security vulnerability in token validations parsing administrative access signatures.",
+                initialCode: `const jwt = require('jsonwebtoken');
+
+function authorizeAdmin(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    if (!token) return res.sendStatus(401);
+
+    // BUG: Standard decoding skips digital cryptosignature validations!
+    // Bad actors can forge claims easily.
+    const payload = jwt.decode(token, process.env.JWT_SECRET_KEY);
+    
+    if (payload && payload.role === 'admin') {
+        req.user = payload;
+        return next();
+    }
+    res.sendStatus(403);
+}`,
+                solutionCheck: (code) => {
+                    const cleanCode = code.replace(/\s+/g, '');
+                    return cleanCode.includes('jwt.verify(');
+                },
+                successHint: "Brilliant AppSec fix! Changing .decode() to .verify() actively tests signatures against cryptographic structures, preventing unauthorized escalation.",
+                tips: [
+                    "Never trust JSON web token payloads without authenticating signatures.",
+                    "Swap out decoding helper operations for verify protocols which assert structure authenticity."
+                ]
+            }
+        ];
+
+        // System Runtime State
+        let currentLessonIndex = 0;
+        let capabilityScore = 45.2;
+        let userTimelineData = [];
+        let chaosActive = false;
+        let lessonState = JSON.parse(JSON.stringify(lessons)); // deep clone lessons configuration
+
+        // Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            loadLesson(0);
+            renderLessonsSidebar();
+            
+            // Welcome Greeting from tutor agent
+            addTutorMessage(`Welcome back! I am checking your system trajectory history... 🔍
+
+I noticed you're exploring our **API Resilience & Async Safety** module. I've initiated a clean virtual POSIX node engine in the sandbox workspace.
+
+Select a tutorial track on the left. I'll continuously evaluate and update your capability metrics. Let's begin!`);
+            
+            updateCapabilityUI();
+        });
+
+        // UI rendering engines
+        function renderLessonsSidebar() {
+            const container = document.getElementById('lessons-container');
+            container.innerHTML = '';
+            
+            lessonState.forEach((lesson, index) => {
+                const isActive = index === currentLessonIndex;
+                const isSolved = lesson.solved;
+                
+                let activeClasses = isActive 
+                    ? 'border-indigo-500 bg-indigo-950/20 shadow-lg shadow-indigo-500/5' 
+                    : 'border-slate-800 hover:border-slate-700 bg-slate-950/40';
+                
+                let badgeColor = "bg-slate-800 text-slate-400";
+                if(lesson.difficulty === "Medium") badgeColor = "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20";
+                if(lesson.difficulty === "Hard") badgeColor = "bg-amber-500/10 text-amber-400 border border-amber-500/20";
+                if(lesson.difficulty === "Critical") badgeColor = "bg-rose-500/10 text-rose-400 border border-rose-500/20";
+
+                const element = document.createElement('div');
+                element.className = `p-3.5 rounded-xl border transition cursor-pointer flex flex-col space-y-2.5 ${activeClasses}`;
+                element.onclick = () => loadLesson(index);
+                
+                element.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full flex items-center justify-center ${isSolved ? 'bg-emerald-500' : 'bg-slate-700 border border-slate-500'}">
+                                ${isSolved ? '<i data-lucide="check" class="w-1.5 h-1.5 text-slate-950 stroke-[4]"></i>' : ''}
+                            </span>
+                            <h4 class="text-xs font-bold ${isActive ? 'text-white' : 'text-slate-300'}">${lesson.title}</h4>
+                        </div>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded uppercase font-semibold ${badgeColor}">${lesson.difficulty}</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 leading-relaxed">${lesson.description}</p>
+                `;
+                
+                container.appendChild(element);
+            });
+            lucide.createIcons();
+        }
+
+        function loadLesson(index) {
+            currentLessonIndex = index;
+            const lesson = lessonState[index];
+            
+            document.getElementById('active-filename').innerText = lesson.filename;
+            document.getElementById('code-editor').value = lesson.initialCode;
+            
+            // Refresh Editor Tabs status
+            renderLessonsSidebar();
+            
+            // Clear Console terminal
+            const term = document.getElementById('terminal-screen');
+            term.innerHTML = `
+                <div class="text-slate-500 monospace">// Virtual Stackcontainer boot initiated...</div>
+                <div class="text-emerald-500/80 monospace">Ready: Sandbox workspace online and looking at changes on '/src/${lesson.filename}'</div>
+            `;
+            
+            // Tutor prompts contextual introduction
+            const introMsg = `Let's work on **${lesson.title}**.
+            
+*Objective:* ${lesson.description}
+
+Here are a couple of concept tips to keep in mind:
+${lesson.tips.map(tip => `- ${tip}`).join('\n')}`;
+
+            addTutorMessage(introMsg);
+        }
+
+        function handleCodeChange() {
+            // Simulated local file save behavior, quiet visual indicator
+        }
+
+        // Run terminal simulator tests 
+        function runCode() {
+            const code = document.getElementById('code-editor').value;
+            const lesson = lessonState[currentLessonIndex];
+            const term = document.getElementById('terminal-screen');
+            
+            term.innerHTML = `
+                <div class="text-indigo-400 monospace">⚡ webcontainer_kernel_exec: npm test</div>
+                <div class="text-slate-400 monospace">Injesting '/src/${lesson.filename}' dependencies mapping trees...</div>
+                <div class="text-slate-500 monospace">Testing environment initialized. Executing target suites...</div>
+                <div class="h-[1px] bg-slate-800 my-2"></div>
+            `;
+
+            // Loading simulation delay
+            setTimeout(() => {
+                if (chaosActive) {
+                    term.innerHTML += `
+                        <div class="text-red-500 font-bold monospace">[CONTAINER CRASHED] - DYNAMIC EXCEPTION TRIGGERED</div>
+                        <div class="text-red-400/90 monospace">Chaos Injection Simulator is actively intercepting and dropping network sockets or corrupting critical node dependencies. Turn off Chaos simulation or solve standard logic before retrying.</div>
+                    `;
+                    addTutorMessage("⚠️ **Chaos Intercept Warning:** My Chaos injector is active in this workspace! The tests cannot run successfully until you disable the active chaos mode or isolate dependencies.");
+                    return;
+                }
+
+                const pass = lesson.solutionCheck(code);
+                
+                if (pass) {
+                    term.innerHTML += `
+                        <div class="text-emerald-500 font-bold monospace">✓ TEST SUCCESSFUL: [${lesson.title}] PASS</div>
+                        <div class="text-slate-400 monospace">Performance Index: 92ms latency execution sweep.</div>
+                        <div class="text-slate-400 monospace">Code Complexity score: <span class="text-indigo-300 font-bold">${lesson.complexity} pt</span></div>
+                    `;
+                    
+                    if (!lesson.solved) {
+                        lesson.solved = true;
+                        // Score calculation based on index algorithm
+                        calculateCapabilityIndex(true, lesson.complexity);
+                        updateCapabilityUI();
+                        renderLessonsSidebar();
+                    }
+                    
+                    addTutorMessage(`✅ **Verification Confirmed!** ${lesson.successHint}`);
+                } else {
+                    term.innerHTML += `
+                        <div class="text-red-500 font-bold monospace">✖ TEST FAILURE: [${lesson.title}] FAILING</div>
+                        <div class="text-red-400 monospace">Details: Compilation passed, but execution assertion checks failed. The algorithm target does not handle architectural boundary assertions safely.</div>
+                        <div class="text-slate-500 monospace">Tip: Click on reset file if you want to start from clean logic blueprints.</div>
+                    `;
+                    
+                    calculateCapabilityIndex(false, lesson.complexity);
+                    updateCapabilityUI();
+                    addTutorMessage(`❌ **Execution Assertion Failed.** I monitored the container exit logs and noticed the code does not fully resolve the target boundary issue. Keep working, or ask me for clarification.`);
+                }
+            }, 750);
+        }
+
+        // Chaos simulation rules engine
+        function triggerChaos(type) {
+            chaosActive = true;
+            const term = document.getElementById('terminal-screen');
+            
+            if (type === 'network') {
+                term.innerHTML += `
+                    <div class="text-amber-500 font-bold monospace mt-2">[CHAOS ENGINE INJECTED] - Latency rate limits induced (+4800ms API block)</div>
+                `;
+                addTutorMessage("💥 **Chaos Event:** I've simulated standard production rate-limiting in your sandbox loop. Watch how your code handles network lag or connection failures under severe payload traffic.");
+            } else if (type === 'dependency') {
+                term.innerHTML += `
+                    <div class="text-red-500 font-bold monospace mt-2">[CHAOS ENGINE INJECTED] - Dependency Collision: detected node_modules path clashes</div>
+                `;
+                addTutorMessage("🔥 **Chaos Event:** Oh no! I've corrupted package versions inside the sandbox file node configurations. This mimics an engineering dependency issue before staging updates.");
+            }
+            
+            // Automatically clear chaos state after a delay or direct user fix request
+            setTimeout(() => {
+                chaosActive = false;
+                term.innerHTML += `
+                    <div class="text-emerald-400 monospace mt-2">// Chaos Engine auto-reset. Local container returning to baseline environment...</div>
+                `;
+            }, 8000);
+        }
+
+        function resetCurrentLesson() {
+            const lesson = lessons[currentLessonIndex];
+            document.getElementById('code-editor').value = lesson.initialCode;
+            addTutorMessage(`System values refreshed for **${lesson.title}**. Start clean!`);
+        }
+
+        // Capability score dynamic evaluation simulation
+        function calculateCapabilityIndex(isSuccess, complexity) {
+            let delta = 0;
+            if (isSuccess) {
+                // Formula evaluation proxy: positive trajectory change based on complex problems
+                delta = (complexity * 5) + Math.random() * 2;
+                capabilityScore = Math.min(100, parseFloat((capabilityScore + delta).toFixed(1)));
+            } else {
+                delta = (complexity * 1.5);
+                capabilityScore = Math.max(0, parseFloat((capabilityScore - delta).toFixed(1)));
+            }
+        }
+
+        function updateCapabilityUI() {
+            document.getElementById('capability-val').innerText = capabilityScore.toFixed(1);
+            document.getElementById('capability-score-mini').innerText = Math.round(capabilityScore);
+            
+            // Adjust dial gauge ring
+            const circle = document.getElementById('gauge-circle');
+            const percent = capabilityScore / 100;
+            const dashoffset = 88 - (88 * percent);
+            circle.style.strokeDashoffset = dashoffset;
+            
+            // Update tracking progress bar
+            const solvedCount = lessonState.filter(l => l.solved).length;
+            const progressPct = Math.round((solvedCount / lessonState.length) * 100);
+            document.getElementById('track-percent').innerText = `${progressPct}% Done`;
+            document.getElementById('track-progress-bar').style.width = `${progressPct}%`;
+        }
+
+        // Live Chat UI functions
+        function addTutorMessage(text) {
+            const chatSpace = document.getElementById('chat-messages');
+            
+            // Convert simple markdown block formatting markers for rich output
+            let formattedText = text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code class="monospace bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800 text-indigo-300 text-[11px]">$1</code>');
+
+            const msgDiv = document.createElement('div');
+            msgDiv.className = "flex flex-col space-y-1 items-start max-w-[85%]";
+            msgDiv.innerHTML = `
+                <span class="text-[9px] text-indigo-400 uppercase tracking-widest font-bold ml-1">Codex Tutor</span>
+                <div class="bg-slate-800 border border-slate-700/70 p-3.5 rounded-2xl rounded-tl-none text-xs text-slate-200 leading-relaxed shadow-sm">
+                    ${formattedText.replace(/\n/g, '<br>')}
+                </div>
+            `;
+            
+            chatSpace.appendChild(msgDiv);
+            chatSpace.scrollTop = chatSpace.scrollHeight;
+        }
+
+        function addUserMessage(text) {
+            const chatSpace = document.getElementById('chat-messages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = "flex flex-col space-y-1 items-end max-w-[85%] ml-auto";
+            msgDiv.innerHTML = `
+                <span class="text-[9px] text-slate-500 uppercase tracking-widest font-bold mr-1">You (Developer)</span>
+                <div class="bg-indigo-600 border border-indigo-500 p-3.5 rounded-2xl rounded-tr-none text-xs text-white leading-relaxed shadow-lg shadow-indigo-600/10">
+                    ${text}
+                </div>
+            `;
+            chatSpace.appendChild(msgDiv);
+            chatSpace.scrollTop = chatSpace.scrollHeight;
+        }
+
+        function handleSendMessage(event) {
+            event.preventDefault();
+            const input = document.getElementById('chat-input');
+            const userMsg = input.value.trim();
+            if(!userMsg) return;
+            
+            addUserMessage(userMsg);
+            input.value = '';
+
+            // Loading state animation
+            setTimeout(() => {
+                const response = generateTutorAIResponse(userMsg);
+                addTutorMessage(response);
+            }, 600);
+        }
+
+        function generateTutorAIResponse(prompt) {
+            const lower = prompt.toLowerCase();
+            const lesson = lessonState[currentLessonIndex];
+            
+            if (lower.includes('hint') || lower.includes('help') || lower.includes('how')) {
+                return `Here's an analytical nudge:
+
+In **${lesson.title}**, you want to review:
+\`${lesson.tips[0]}\`
+
+Think about where you should intercept structural calls. Would a wrapper process resolve exceptions before they bubble up to crash the runtime?`;
+            }
+            
+            if (lower.includes('chaos') || lower.includes('break')) {
+                return "The Chaos Injector introduces realistic edge cases (like server packet drops and dependency clashing). It evaluates if your architectural layout can withstand messy real-world environments!";
+            }
+            
+            if (lower.includes('formula') || lower.includes('capability') || lower.includes('score')) {
+                return "Your Capability Index ($C_{\\text{user}}$) is evaluated mathematically by analyzing the complexity of issues you resolve compared to your average error recovery duration. Solving high-complexity challenges boosts metrics faster.";
+            }
+
+            return `I've analyzed your prompt concerning **${lesson.title}**. 
+
+Try using the **Execute Sandbox Tests** tool to trace errors directly. If you run into a dynamic compile bottleneck, look at standard error handler practices in Node/React.`;
+        }
+
+        function toggleMathModal() {
+            const modal = document.getElementById('math-modal');
+            modal.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
