@@ -1,37 +1,73 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-using int64 = long long;
+void copyied(vector<vector<int>>&mat,int &N,int &M,vector<vector<int>>&copy){
+    for(int i = 0 ; i < N ;i++){
+        for(int j = 0 ; j < M ; j++){
+             copy[i][j] = mat[i][j] ;
+        }
+    }
+}
+
+bool isValid(int &x,int &y ,int &N,int &M){
+    if(x>=0 && x<N && y>=0 && y<M)return true;
+    else return false;
+}
+
+void update(vector<vector<int>>&mat,int &N,int &M,vector<vector<int>>&copy){
+    for(int i = 0 ; i < N ;i++){
+        for(int j = 0 ; j < M ; j++){
+            int arrX[8] = {+0,-1,-1,-1,+0,+1,+1,+1};
+            int arrY[8] = {-1,-1,+0,+1,+1,+1,+0,-1};
+            int mx = mat[i][j];
+            for(int k = 0 ; k < 8 ; k++){
+                int x=i+arrX[k],y=j+arrY[k];
+                if(isValid(x,y,N,M)){
+                    mx=max(mx,copy[x][y]);
+                }
+            }
+            mat[i][j]=mx;
+        }
+    }
+    copyied(mat,N,M,copy);
+}
+
+bool isEqual(vector<vector<int>>&mat,int &N,int &M){
+    int x=mat[0][0];
+    for(int i = 0 ; i < N ;i++){
+        for(int j = 0 ; j < M ; j++){
+            if(i==0 && j==0)continue;
+            if( x!= mat[i][j])return false;;
+        }
+    }
+    return true;
+}
+
+
 
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
-
     int T;
     cin >> T;
-
     while (T--) {
-        int n;
-        int64 c;
-        cin >> n >> c;
-
-        vector<int64> a(n + 2, 0);
-
-        for (int i = 1; i <= n; i++)
-            cin >> a[i];
-
-        vector<int64> dp(n + 3, 0);
-
-        for (int i = n; i >= 1; i--) {
-            dp[i] = a[i] - c + dp[i + 1];
-
-            if (i < n) {
-                dp[i] = max(dp[i],
-                            max(a[i], a[i + 1]) - c + dp[i + 2]);
+        int N, M;
+        cin >> N >> M;
+        vector<vector<int>>mat(N,vector<int>(M));
+        vector<vector<int>>copy(N,vector<int>(M));
+        for(int i = 0 ; i < N ;i++){
+            for(int j = 0 ; j < M ; j++){
+                cin >> mat[i][j];
+                copy[i][j]=mat[i][j];
             }
         }
-
-        cout << dp[1] << '\n';
+        int hours = 0 ;
+        while(!isEqual(mat,N,M)){
+            hours++;
+            update(mat,N,M,copy);
+        }
+        cout << hours << endl;
+        
     }
 
     return 0;
