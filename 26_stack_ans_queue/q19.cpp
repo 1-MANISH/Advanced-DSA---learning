@@ -1,35 +1,43 @@
 #include<bits/stdc++.h>
 using namespace std;
-#define ll long long 
+
 
 int main(){
-	vector<int>allowedDigits;
+	vector<string>allowedDigits;
 	for(int i = 0 ; i < 10 ; i++){
 		int digit;
 		cin >> digit;
-		if(digit)
-		allowedDigits.push_back(i); 
+		if(digit)allowedDigits.push_back(to_string(i)); 
 	}
 
-	int N , cnt=0;
+	int N , cnt=1;
 	cin >> N;
-	queue<ll>q;
-	q.push(0);
+	queue<queue<string>>q;
+	queue<string>firstSet;
+	for(auto digit:allowedDigits){
+		if(digit!="0")firstSet.push({digit});
+	}
+	q.push(firstSet);
 	while(!q.empty()){
-		ll element = q.front();
+		queue<string> p_elements=q.front();
+		queue<string> t_elements = q.front();
 		q.pop();
-		for(auto &digit:allowedDigits){
-			ll newElement = element*10+digit;
-			if(newElement>0)
-				q.push(newElement);
+		
+		queue<string>output;
+		while(!p_elements.empty()){
+			for(auto &digit:allowedDigits){
+				string temp = p_elements.front()+digit;
+				output.push(temp);
+			}
+			p_elements.pop();
 		}
-		if(cnt==0){
-			cnt++;
-			continue;
-		}
+		q.push(output);
 		if(cnt>N)break;
-		if(cnt>=1 && cnt <= N && element>0){
-			cout << element << endl;
+
+		while(!t_elements.empty()){
+			if(cnt>N)break;
+			cout << t_elements.front()<<endl;
+			t_elements.pop();
 			cnt++;
 		}
 		
