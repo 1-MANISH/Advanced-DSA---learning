@@ -36,22 +36,17 @@ TreeNode* buildTree(const vector<string>& nodes) {
 
 /*
     Implement only the function below.
-    Return the k-th smallest value (1-indexed) in the BST.
+    Return the sum of the values of all nodes whose value is inside the
+    inclusive range [low, high].
 */
-
-void inOrder(TreeNode* root,int &ans,int &k,int &count){
-    if(root==NULL)return;
-    inOrder(root->left,ans,k,count);
-    if(count==k){
-        ans=root->val;
-    }
-    count+=1;
-    inOrder(root->right,ans,k,count);
-}
-int kthSmallest(TreeNode* root, int k) {
-        if(root==NULL)return -1;
-        int ans,count=1;
-        inOrder(root,ans,k,count);
+long long rangeSumBST(TreeNode* root, int low, int high) {
+    if(root==NULL)return 0;
+        int ans = 0;
+        if(root->val>=low)
+            ans+=rangeSumBST(root->left,low,high);
+        if(root->val<=high)
+            ans+=rangeSumBST(root->right,low,high);
+        ans+=(root->val>=low && root->val<=high) ? root->val : 0;
         return ans;
 }
 
@@ -65,12 +60,12 @@ int main() {
     vector<string> nodes(n);
     for (int i = 0; i < n; i++) cin >> nodes[i];
 
-    int k;
-    cin >> k;
+    int low, high;
+    cin >> low >> high;
 
     TreeNode* root = buildTree(nodes);
 
-    cout << kthSmallest(root, k) << '\n';
+    cout << rangeSumBST(root, low, high) << '\n';
 
     return 0;
 }

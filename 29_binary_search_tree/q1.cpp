@@ -4,7 +4,7 @@ using namespace std;
 struct TreeNode {
     int val;
     TreeNode *left, *right;
-    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+    TreeNode(int v) : val(v), left(nullptr), right(nullptr) {}
 };
 
 TreeNode* buildTree(const vector<string>& nodes) {
@@ -15,7 +15,7 @@ TreeNode* buildTree(const vector<string>& nodes) {
     q.push(root);
 
     int i = 1;
-    while (!q.empty() && i < nodes.size()) {
+    while (!q.empty() && i < (int)nodes.size()) {
         TreeNode* cur = q.front();
         q.pop();
 
@@ -25,7 +25,7 @@ TreeNode* buildTree(const vector<string>& nodes) {
         }
         i++;
 
-        if (i < nodes.size() && nodes[i] != "null") {
+        if (i < (int)nodes.size() && nodes[i] != "null") {
             cur->right = new TreeNode(stoi(nodes[i]));
             q.push(cur->right);
         }
@@ -34,17 +34,45 @@ TreeNode* buildTree(const vector<string>& nodes) {
     return root;
 }
 
-// ================= IMPLEMENT FUNCTION =================
-void preorderTraversal(TreeNode* root,vector<int>&output) {
-    if(root==NULL){
-        return;
+// Serialize a tree to its level-order (BFS) form: values separated by single
+// spaces, "null" for a missing child, trailing "null"s trimmed. Empty -> "".
+string serialize(TreeNode* root) {
+    if (!root) return "";
+    vector<string> out;
+    queue<TreeNode*> q;
+    q.push(root);
+    while (!q.empty()) {
+        TreeNode* nd = q.front();
+        q.pop();
+        if (!nd) { out.push_back("null"); continue; }
+        out.push_back(to_string(nd->val));
+        q.push(nd->left);
+        q.push(nd->right);
     }
-
-    output.push_back(root->val);
-    preorderTraversal(root->left,output);
-    preorderTraversal(root->right,output);
+    while (!out.empty() && out.back() == "null") out.pop_back();
+    string res;
+    for (size_t i = 0; i < out.size(); i++) {
+        if (i) res += ' ';
+        res += out[i];
+    }
+    return res;
 }
-// ====================================================
+
+/*
+    Implement only the function below.
+    Return the subtree rooted at the node whose value equals val, or null
+    if no such node exists.
+*/
+TreeNode* searchBST(TreeNode* root, int val) {
+        if(root==NULL)return NULL;
+        if(root->val==val){
+            return root;
+        }else if(root->val>val){
+            return searchBST(root->left,val);
+        }else{
+            return searchBST(root->right,val);
+        }
+}
 
 int main() {
     ios::sync_with_stdio(false);
@@ -52,17 +80,18 @@ int main() {
 
     int n;
     cin >> n;
+
     vector<string> nodes(n);
     for (int i = 0; i < n; i++) cin >> nodes[i];
 
+    int val;
+    cin >> val;
+
     TreeNode* root = buildTree(nodes);
 
-    vector<int> result ;
-    preorderTraversal(root,result);
+    TreeNode* res = searchBST(root, val);
 
-    for (int i = 0; i < result.size(); i++) {
-        if (i) cout << " ";
-        cout << result[i];
-    }
-    cout << '\n';
+    cout << serialize(res) << '\n';
+
+    return 0;
 }
