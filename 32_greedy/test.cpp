@@ -1,61 +1,52 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+
+class Solution {
+public:
+    vector<vector<int>> merge(vector<vector<int>>& intervals) {
+        sort(intervals.begin(),intervals.end());
+        int s1 = intervals[0][0] ,  e1 = intervals[0][1] , index = 1, n = intervals.size();
+        vector<vector<int>>output;
+        while(index<n){
+            int s2 = intervals[index][0] , e2 = intervals[index][1];
+            // overlap 
+            if(max(s1,s2)<=min(e1,e2)){
+                e1 = max(e1,e2);
+            }else{
+                output.push_back({s1,e1});
+                s1=intervals[index][0];
+                e1=intervals[index][1];
+            }
+            index++;
+        }
+        output.push_back({s1,e1});
+        return output;
+    }
+};
+
+
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    int t;
-    cin >> t;
+    int n;
+    cin >> n;
 
-    while (t--) {
-        int n;
-        cin >> n;
+    vector<int>arr(n);
 
-        vector<int> arr(n);
-        for (int &x : arr)
-            cin >> x;
+    for(int i = 0 ; i < n ; i++)
+        cin >> arr[i];
 
-        int start = -1;
-        int best_left = -1, best_right = -1;
-        int best_len = 0;
+    vector<vector<int>>intervals(n,vector<int>(2));
 
-        for (int i = 0; i < n; ++i) {
-
-            if (arr[i] == 0)
-                continue;
-
-            if (start == -1)
-                start = i;
-
-            // Current interval [start, i]
-            int len = i - start + 1;
-
-            if (len > best_len) {
-                best_len = len;
-                best_left = start;
-                best_right = i;
-            }
-
-            if (arr[i] == 1) {
-                start = i;
-            }
-        }
-
-        // Replace all -1 to 0,
-        for (int i = 0; i < n; ++i) {
-            if (arr[i] == -1)arr[i] = 0;
-        }
-
-        if (best_left != -1) {
-            arr[best_left] = 1;
-            arr[best_right] = 1;
-        }
-
-        for (int i = 0; i < n; ++i) {
-            cout << arr[i] << (i + 1 == n ? '\n' : ' ');
-        }
+    for(int i  = 0 ; i < n ; i++){
+        intervals[i]={i,i+arr[i]};
     }
+    Solution sol;
+    vector<vector<int>>output = sol.merge(intervals);
+
+    cout << (output.size()<=1 ? "true":"false");
 
     return 0;
 }

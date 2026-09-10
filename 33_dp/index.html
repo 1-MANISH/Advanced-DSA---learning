@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html>
+        <head>
+                <title> Search</title>
+        </head>
+
+        <body>
+                <input 
+                        type="text"
+                        id="search"
+                        placeholder="Search product ...."
+                
+                />
+
+                <p id="status"></p>
+
+ 
+        </body>
+
+        <script>
+
+                const searchInput = document.getElementById("search");
+                const status = document.getElementById("status");
+
+                let timer;
+
+                searchInput.addEventListener("input", () => {
+                        clearTimeout(timer);
+                        timer = setTimeout(async () => {
+                                const query = searchInput.value.trim();
+                                if (query.length > 0) {
+                                        status.textContent = `Searching for "${query}"...`;
+                                        // Simulate a search operation
+                                        const result = await fetch(`https://dummyjson.com/products/search?q=${query}`);
+                                        const data = await result.json();
+                                        status.textContent = `Found ${data.products.length} results for "${query}"`;
+                                } else {
+                                        status.textContent = "";
+                                }
+                        }, 500); // Delay of 500ms after user stops typing
+                });
+        </script>
+
+</html>

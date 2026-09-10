@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+// https://codeforces.com/group/4vcXCPx8NY/contest/713067/problem/J
 
 
 int main() {
