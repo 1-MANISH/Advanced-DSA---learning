@@ -41,7 +41,8 @@ public:
 };
 
 int main(){
-
+	ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 	int n;
 	cin >> n;
 	vector<int>height(n+1);
