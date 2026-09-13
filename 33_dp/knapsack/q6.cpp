@@ -6,6 +6,9 @@ const int N = 1e3;
 const int S = 1e3;
 vector<vector<int>>dp(N+1,vector<int>(S+1,-1));
 
+// https://codeforces.com/group/4vcXCPx8NY/contest/715177/problem/F
+// F. Count Subset Sum
+
 int countSubsetSum(int index,int currentSum,int &target,int &n,vector<int>&arr){
 
     if(index>=n){
