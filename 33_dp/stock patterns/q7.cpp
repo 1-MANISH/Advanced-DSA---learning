@@ -1,35 +1,60 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int BUY  = 0;
-const int SELL = 1;
+
+const int NONE = 0;
+const int NORMAL_TRX = 1;
+const int SHORT_SELL = 2;
+
+const int N = 1e3;
+const int K = 1e3;
+long long dp[N][3][K];
+
 
 // #https://codeforces.com/group/4vcXCPx8NY/contest/716805/problem/G
 // #G. Buy & Sell Stock: Short Selling + K Transactions
 
 
-int solve(vector<int>&prices,int &k,int index,int transactionType,int event){
+long long solve(int index,int tranType,int event,int &k,vector<int>&prices){
 
 
-    // base case
-    if(index >= prices.size() or event == 2*k)
-        return 0;
+        if(index==prices.size() or event==2*k){
+            // check started transaction done or not -  as also reach to max transaction
+            return tranType==NONE ? 0 : INT_MIN;
+        }
 
-    // do not perform any operation - skip this  day
+        if(dp[index][tranType][event]!=LONG_MIN){ 
+            return dp[index][tranType][event];
+        }
 
-    int ans1 = solve(prices,k,index+1,transactionType,event);
 
-    // do all possible transaction
+        long long  ans1 ,ans2,ans3;
+        ans1=ans2=ans3=INT_MIN;
 
-    int ans2 = 0 ;
+        // skip this day -  not starting any tranx
 
-    if(transactionType == BUY){
-         ans2 = -prices[index] + solve(prices,k,index+1,SELL,event+1);
-    }else{
-         ans2 = +prices[index] + solve(prices,k,index+1,BUY,event+1);
-    }
+        ans1 = solve(index+1,tranType,event,k,prices);
 
-    return max(ans1,ans2);
+        // dp the possible tranxation
+
+
+        // nop transaction currently running
+        if( tranType == NONE){
+            // we can start normal
+            ans2 = -prices[index] + solve(index+1,NORMAL_TRX,event+1,k,prices);
+            // we can start short sell
+            ans3 = +prices[index] + solve(index+1,SHORT_SELL,event+1,k,prices);
+        }
+        else if (tranType == NORMAL_TRX){ // normal transaction started need to complete
+            // complete normal transaction
+            ans2 = +prices[index] + solve(index+1,NONE,event+1,k,prices);
+        }
+        else{ // shrot selling running -  need to complete
+            // complete short sell - buy noe
+            ans3 = -prices[index] + solve(index+1,NONE,event+1,k,prices);
+        }
+        // return max profit
+        return dp[index][tranType][event]= max(ans1,max(ans2,ans3));
 }
 
 int main() {
@@ -43,7 +68,15 @@ int main() {
     for(int i = 0 ; i < n ; i++)
         cin >> prices[i];
 
-    cout << solve(prices,k,0,BUY,0);
+    for(int i = 0 ; i < N ; i++){
+            for(int j = 0 ; j < 3 ; j ++){
+                for(int p  = 0 ; p < N ; p++){
+                    dp[i][j][p]=LONG_MIN;
+                }
+            }
+    }
+
+    cout << solve(0,NONE,0,k,prices);
 
 
     return 0;
