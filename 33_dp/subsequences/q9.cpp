@@ -19,3 +19,10 @@ int main() {
     return 0;
 }
 
+/*
+https://www.naukrigulf.com/
+https://www.gulftalent.com/
+https://uae.dubizzle.com/jobs/
+https://secure.indeed.com/auth?co=AE&hl=en_AE&jsContinue=https%3A%2F%2Fonboarding.indeed.com%2Fonboarding%3Fhl%3Den%26co%3DAE%26continue%3Dhttps%253A%252F%252Fae.indeed.com%252F%253Fjson%253D1%2526passedCtk%253D1k2v2h3hbhc0m801%26from%3Dhp-accounted-focus
+https://builder.aws.com/build/workshops?tab=discover
+*/
