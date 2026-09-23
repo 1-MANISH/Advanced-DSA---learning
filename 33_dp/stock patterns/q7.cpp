@@ -1,61 +1,50 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
 
-
-const int NONE = 0;
-const int NORMAL_TRX = 1;
+const int NONE  = 0;
+const int NORMAL_TRAN = 1;
 const int SHORT_SELL = 2;
-
 const int N = 1e3;
 const int K = 1e3;
-long long dp[N][3][K];
-
+ll dp[N][K][3];
 
 // #https://codeforces.com/group/4vcXCPx8NY/contest/716805/problem/G
 // #G. Buy & Sell Stock: Short Selling + K Transactions
 
-
-long long solve(int index,int tranType,int event,int &k,vector<int>&prices){
-
-
-        if(index==prices.size() or event==2*k){
-            // check started transaction done or not -  as also reach to max transaction
-            return tranType==NONE ? 0 : INT_MIN;
-        }
-
-        if(dp[index][tranType][event]!=LONG_MIN){ 
-            return dp[index][tranType][event];
-        }
+ll solve(int index,int event,int transactionType,int &k,vector<int>&prices){
 
 
-        long long  ans1 ,ans2,ans3;
-        ans1=ans2=ans3=INT_MIN;
+    // base case
+    if(index==prices.size() or event==2*k){// means started trnx completed
+        return transactionType == NONE ? 0 : INT_MIN;
+    }
 
-        // skip this day -  not starting any tranx
+    if(dp[index][event][transactionType]!=LLONG_MIN)return dp[index][event][transactionType];
 
-        ans1 = solve(index+1,tranType,event,k,prices);
+    // let skip this day
+    ll ans1 = solve(index+1,event,transactionType,k,prices);
 
-        // dp the possible tranxation
+    // do perform all transactions
+    ll ans2 = INT_MIN , ans3 =INT_MIN;
 
+    if(transactionType == NONE){ // now 2 options 1. normal trnx 2. short sell trnx
+        // starting a new trnx
+        // normal trnx -  buy then sell
+        ans2 = -prices[index] + solve(index+1,event+1,NORMAL_TRAN,k,prices);
 
-        // nop transaction currently running
-        if( tranType == NONE){
-            // we can start normal
-            ans2 = -prices[index] + solve(index+1,NORMAL_TRX,event+1,k,prices);
-            // we can start short sell
-            ans3 = +prices[index] + solve(index+1,SHORT_SELL,event+1,k,prices);
-        }
-        else if (tranType == NORMAL_TRX){ // normal transaction started need to complete
-            // complete normal transaction
-            ans2 = +prices[index] + solve(index+1,NONE,event+1,k,prices);
-        }
-        else{ // shrot selling running -  need to complete
-            // complete short sell - buy noe
-            ans3 = -prices[index] + solve(index+1,NONE,event+1,k,prices);
-        }
-        // return max profit
-        return dp[index][tranType][event]= max(ans1,max(ans2,ans3));
+        // short sell trnx -  sell then buy
+        ans3 = +prices[index] + solve(index+1,event+1,SHORT_SELL,k,prices);
+
+    }else if(transactionType == NORMAL_TRAN){// need to complete this normal trnx
+        ans2 = +prices[index] + solve(index+1,event+1,NONE,k,prices);
+    }else{ // need to complete this short sell trnx
+        ans3 = -prices[index] + solve(index+1,event+1,NONE,k,prices);
+    }
+
+    return dp[index][event][transactionType] = max(ans1,max(ans2,ans3));
 }
+
 
 int main() {
     ios::sync_with_stdio(false);
@@ -69,14 +58,16 @@ int main() {
         cin >> prices[i];
 
     for(int i = 0 ; i < N ; i++){
-            for(int j = 0 ; j < 3 ; j ++){
-                for(int p  = 0 ; p < N ; p++){
-                    dp[i][j][p]=LONG_MIN;
-                }
+        for(int j = 0 ; j < N ; j++){
+            for(int p = 0 ; p < 3 ; p++){
+                dp[i][j][p]=LLONG_MIN;
             }
+        }
     }
 
-    cout << solve(0,NONE,0,k,prices);
+    cout << solve(0,0,NONE,k,prices);
+
+
 
 
     return 0;

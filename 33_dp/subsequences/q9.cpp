@@ -4,17 +4,48 @@ using namespace std;
 // https://codeforces.com/group/4vcXCPx8NY/contest/717252/problem/G
 // G. Shortest Common Supersequence Length
 
+const int N = 5e2;
+int dp[N][N];
+
+int solve(int i,int j,string &s,string &t){
+
+    //base case
+    if(i==s.size()){
+        return t.size()-j; // rem of t
+    }
+    if(j==t.size()){
+        return s.size()-i;
+    }
+
+    if(dp[i][j]!=-1)return dp[i][j];
+
+    int ans = 0 ;
+    // if both char equals means need to take it
+    if(s[i]==t[j]){
+        ans = 1 + solve(i+1,j+1,s,t);
+    }
+    else{
+        // take it from s
+        int ans1 = 1  + solve(i+1,j,s,t);
+
+        // take it from t
+        int ans2 = 1 + solve(i,j+1,s,t);
+
+        ans = min(ans1,ans2);// as shorted supersequen building
+    }
+
+    return dp[i][j] =  ans;
+
+}
+
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    int n;
-    cin >> n;
-    vector<int>arr(n);
-    for(int i = 0  ; i < n ; i++)
-        cin >> arr[i];
-
-    
+    string s,t;
+    cin >> s >> t;
+    memset(dp,-1,sizeof dp);
+    cout << solve(0,0,s,t);
 
     return 0;
 }
