@@ -2,7 +2,6 @@
 using namespace std;
 
 
-const int NONE = 4;
 const int REST = 0 ;
 const int CONTEST = 1;
 const int GYM = 2;
@@ -21,115 +20,61 @@ int solve(int index ,int PREV_EVENT,vector<int>&events){
 
 	if(dp[index][PREV_EVENT]!=-1) return dp[index][PREV_EVENT];
 
-	int ans = INT_MAX;
+	// REST -  always choose to rest
+	int ans1  = 1 + solve(index+1,REST,events);
 
-	if(events[index] == REST){
-		ans = 1 + solve(index+1,events[index],events);
-	}else{
-		// CONTEST/ REST
-		int ans1 = INT_MAX;
-		if(events[index]==CONTEST and PREV_EVENT!=CONTEST )
-			ans1 = solve(index+1,CONTEST,events);
-		else if(events[index]==CONTEST)
-			ans1 = 1 + solve(index+1,REST,events);
+	// CONTEST
+	int ans2 = events.size()+10;
+	if((events[index]==CONTEST or events[index]==CONTEST_GYM )and PREV_EVENT!=CONTEST)
+		ans2 = solve(index+1,CONTEST,events);
 
-		// GYM/REST
-		int ans2 = INT_MAX;
-		if(events[index]==GYM and PREV_EVENT!=GYM)
-			ans2 = solve(index+1,GYM,events);
-		else if(events[index]==GYM)
-			ans2 = 1 + solve(index+1,REST,events);
+	// GYM
+	int ans3 = events.size()+10;
+	if((events[index]==GYM or events[index]==CONTEST_GYM )and PREV_EVENT!=GYM)
+		ans3 = solve(index+1,GYM,events);
 
-		// CONTEST_OR_GYM
-		int ans3 = INT_MAX;
-		if(events[index] == CONTEST_GYM)
-		{
-			if(PREV_EVENT==CONTEST){
-				ans3 = solve(index+1,GYM,events);
-			}
-			else{
-				ans3 = solve(index+1,CONTEST,events);
-			}
-		}
-		ans = min(ans1,min(ans2,ans3));
-	}
-	return dp[index][PREV_EVENT]= ans;
+	return dp[index][PREV_EVENT] = min(ans1,min(ans2,ans3));
+
+	
 }
 
 void recover(int index ,int PREV_EVENT,vector<int>&events){
 	
 	// base case
 	if(index==events.size()){
-		return ;
+		return;
 	}
 
-	int ans = INT_MAX;
 
-	if(events[index] == REST){
-		ans = 1 + solve(index+1,REST,events);
+	// REST -  always choose to rest
+	int ans1  = 1 + solve(index+1,REST,events);
+
+	// CONTEST
+	int ans2 = events.size()+10;
+	if((events[index]==CONTEST or events[index]==CONTEST_GYM )and PREV_EVENT!=CONTEST)
+		ans2 = solve(index+1,CONTEST,events);
+
+	// GYM
+	int ans3 = events.size()+10;
+	if((events[index]==GYM or events[index]==CONTEST_GYM )and PREV_EVENT!=GYM)
+		ans3 = solve(index+1,GYM,events);
+
+	int ans = min(ans1,min(ans2,ans3));
+	if(ans==ans1){
 		result+="R";
 		recover(index+1,REST,events);
+	}else if(ans==ans2){
+		result+="C";
+		recover(index+1,CONTEST,events);
 	}else{
-		// CONTEST/ REST
-		int ans1 = INT_MAX;
-		if(events[index]==CONTEST and PREV_EVENT!=CONTEST )
-			ans1 = solve(index+1,CONTEST,events);
-		else if(events[index]==CONTEST)
-			ans1 = 1 + solve(index+1,REST,events);
-
-		// GYM/REST
-		int ans2 = INT_MAX;
-		if(events[index]==GYM and PREV_EVENT!=GYM)
-			ans2 = solve(index+1,GYM,events);
-		else if(events[index]==GYM)
-			ans2 = 1 + solve(index+1,REST,events);
-
-		// CONTEST_OR_GYM
-		int ans3 = INT_MAX;
-		if(events[index] == CONTEST_GYM)
-		{
-			if(PREV_EVENT==CONTEST)
-				ans3 = solve(index+1,GYM,events);
-			else
-				ans3 = solve(index+1,CONTEST,events);
-		}
-
-		ans = min(ans1,min(ans2,ans3));
-
-		if(ans==ans1){
-			if(events[index]==CONTEST and PREV_EVENT!=CONTEST ){
-				result+="C";
-				recover(index+1,CONTEST,events);
-			}
-			else {
-				result+="R";
-				recover(index+1,REST,events);
-			}
-		}else if(ans==ans2){
-			if(events[index]==GYM and PREV_EVENT!=GYM){
-				result+="G";
-				recover(index+1,GYM,events);
-			}
-			else{
-				result+="R";
-				recover(index+1,REST,events);
-			}
-		}else{
-			if(events[index] == CONTEST_GYM)
-			{
-				if(PREV_EVENT==CONTEST){
-					result+="G";
-					recover(index+1,GYM,events);
-				}
-				else{
-					result+="C";
-					recover(index+1,CONTEST,events);
-				}
-			}
-		}
+		result+="G";
+		recover(index+1,GYM,events);
 	}
+
 	
 }
+
+
 
 
 int main(){
@@ -145,7 +90,10 @@ int main(){
     	cin >> events[i];
     }
     memset(dp,-1,sizeof dp);
-    cout << solve(0,NONE,events) << endl;
-    recover(0,NONE,events);
-    cout << result << endl;
+    cout << solve(0,REST,events) << endl;
+    recover(0,REST,events);
+    cout << result;
+   
 }
+
+// https://myorders.bigrock.in/login

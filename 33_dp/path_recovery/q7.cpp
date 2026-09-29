@@ -6,7 +6,6 @@ using namespace std;
 
 const int N = 1e3;
 int dp[N][N];
-int deleted  = 0 ;
 
 class Operation{
 public:
@@ -40,16 +39,14 @@ int solve(int i,int j,string &s,string &t){
         ans = solve(i+1,j+1,s,t);
     }else{
         // replace ,delete or insert
-        // replace this char - either j or i wala to each other
+
+        // replace this char - either i wala to each other or adding at ith
         int ans1  = 1 + solve(i+1,j+1,s,t);
 
-        // removing s ith char -  insert at jth in t
+        // removing s ith char 
         int ans2 = 1 + solve(i+1,j,s,t);
 
-        // removing t jth char - insety at ith in s
-        int ans3 = 1 + solve(i,j+1,s,t);
-
-        ans = min(ans1,min(ans2,ans3));
+        ans = min(ans1,ans2);
 
     }
     return dp[i][j] = ans;
@@ -61,52 +58,47 @@ void recover(int i,int j,string &s,string &t){
     // number of rem in any string
     if(i==s.size()){
         for(int index=j ; index < t.size() ; index++){
-             result.push_back(new Operation("DELETE",index-deleted));
+             result.push_back(new Operation("DELETE",index));
         }
         return;
     }
 
     if(j==t.size()){
         for(int index=i ; index < s.size() ; index++){
-             result.push_back(new Operation("DELETE",index-deleted));
+             result.push_back(new Operation("DELETE",index));
         }
         return;
     }
+
+
 
     // both char are equal
     int ans = INT_MAX ;
     if(s[i]==t[j]){
         ans = solve(i+1,j+1,s,t);
-        recover(i+1,j+1,s,t); // as no operation needed
+        
     }else{
         // replace ,delete or insert
-        // replace this char - either i or j
+        // replace this char - either j or i wala to each other
         int ans1  = 1 + solve(i+1,j+1,s,t);
 
-        // removing s ith char -  insert at jth in t
+        // removing s ith char - 
         int ans2 = 1 + solve(i+1,j,s,t);
 
-        // removing t jth char - insety at ith in s
-        int ans3 = 1 + solve(i,j+1,s,t);
-
-        ans = min(ans1,min(ans2,ans3));
+        ans = min(ans1,ans2);
 
         if(ans==ans1){
             result.push_back(new Operation("REPLACE",i,s[i]));
             recover(i+1,j+1,s,t);
-        }else if(ans2){
-            result.push_back(new Operation("DELETE",i-deleted));
-            deleted++;
-            recover(i+1,j,s,t);
         }else{
-            result.push_back(new Operation("DELETE",j-deleted));
-            deleted++;
-            recover(i,j+1,s,t);
+            result.push_back(new Operation("DELETE",i));
+            recover(i+1,j,s,t);
         }
-
     }
-
+   
 }
+
+
 
 int main() {
     ios::sync_with_stdio(false);
