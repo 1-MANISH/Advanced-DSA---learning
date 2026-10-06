@@ -13,7 +13,6 @@ public:
     string opr;
     int pos;
     char ch;
-
     Operation(string opr,int pos=-1,char ch='1'){
         this->opr = opr;
         this->pos = pos;
@@ -65,7 +64,7 @@ int solve(int i,int j,string &s,string &t){
 }
 
 
-void recover(int i,int j,string &s,string &t){
+void recover(int i,int j,int pos,string &s,string &t){
 
     // base case
 
@@ -73,7 +72,7 @@ void recover(int i,int j,string &s,string &t){
     if(j==t.size()){
         // delete all S(A) string character to make A==B(S==T)
         for(int index=i ;index<s.size();index++){
-            result.push_back(new Operation("DELETE",index-1));
+            result.push_back(new Operation("DELETE",pos)); // size decrease as delete happen so no need to update position
         }
         return ;
     }
@@ -81,8 +80,8 @@ void recover(int i,int j,string &s,string &t){
 
     if(i==s.size()){
         // insert characters into string S(A) to make A==B
-        for(int index=j ,k  = 0  ;index<t.size();index++,k++){
-            result.push_back(new Operation("INSERT",s.size()+k,t[index]));
+        for(int index=j ;index<t.size();index++,pos++){ // string shift to right
+            result.push_back(new Operation("INSERT",pos,t[index]));
         }
         return;
     }
@@ -92,7 +91,7 @@ void recover(int i,int j,string &s,string &t){
     int ans = INT_MAX ;
     if(s[i]==t[j]){
         ans = solve(i+1,j+1,s,t);
-        recover(i+1,j+1,s,t);
+        recover(i+1,j+1,pos+1,s,t);
     }else{
         // replace ,delete or insert
 
@@ -108,14 +107,14 @@ void recover(int i,int j,string &s,string &t){
         ans =min(ans1,min(ans2,ans3));
 
         if(ans==ans1){
-            result.push_back(new Operation("REPLACE",i,t[j]));
-            recover(i+1,j+1,s,t);
+            result.push_back(new Operation("REPLACE",pos,t[j]));
+            recover(i+1,j+1,pos+1,s,t);
         }else if(ans==ans2){
-            result.push_back(new Operation("DELETE",i));
-            recover(i+1,j,s,t);
+            result.push_back(new Operation("DELETE",pos));
+            recover(i+1,j,pos,s,t); // no need to update position
         }else{
-            result.push_back(new Operation("INSERT",i,t[j]));
-            recover(i,j+1,s,t);
+            result.push_back(new Operation("INSERT",pos,t[j]));
+            recover(i,j+1,pos+1,s,t);
         }
 
     }
@@ -135,7 +134,7 @@ int main() {
 
     cout << solve(0,0,s,t) << endl;
     
-    recover(0,0,s,t);
+    recover(0,0,0,s,t);
 
     for(auto &ele:result){
         if(ele->opr=="DELETE"){
