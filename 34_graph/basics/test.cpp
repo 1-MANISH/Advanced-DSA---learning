@@ -1,28 +1,28 @@
+#include<bits/stdc++.h>
 
-#include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
+int main()
 
-    int n;
+{
+
+
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int n, u,v,p,q;
     cin >> n;
-    vector<int>adjList[n+1];
-    for(int i = 0 ; i < n-1 ; i++){
-        int u,v;
-        cin >> u >> v;
-        adjList[u].push_back(v);
-        adjList[v].push_back(u);
+    cin >> u >> v;
+    cin >> p >> q;
+
+    if(u==p or u==q){
+        cout << u << endl;
+    }else{
+        cout << v;
     }
 
-    for(int i = 1 ; i <= n ; i++){
-        if(adjList[i].size()==n-1){
-            cout << i << endl;
-            break;
-        }
-    }
 
-    
+
     return 0;
+
+
 }

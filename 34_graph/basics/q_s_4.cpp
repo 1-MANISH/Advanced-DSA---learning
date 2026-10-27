@@ -5,20 +5,18 @@ using namespace std;
 
 // https://codeforces.com/group/4vcXCPx8NY/contest/726913/problem/D
 
-vector<vector<int>>paths;
 
-void bfs(int &node,vector<int>adjList[],vector<bool>&visited){
+void bfs(int node,vector<int>adjList[],vector<bool>&visited){
 
     queue<int>q;
     q.push(node);
     visited[node]=true;
-    vector<int>path;
+  
 
     while(!q.empty()){
         int c_node = q.front();
         q.pop();
-        path.push_back(c_node);
-
+      
         // adjNode
         for(int &adjNode:adjList[c_node]){
             if(!visited[adjNode]){
@@ -27,8 +25,7 @@ void bfs(int &node,vector<int>adjList[],vector<bool>&visited){
             }
         }
     }
-    paths.push_back(path);
-    
+  
 }
 
 int main() {
@@ -45,18 +42,22 @@ int main() {
         adjList[v].push_back(u);
     }
 
+
+
     vector<bool>visited(n+1,false);
+    bfs(1,adjList,visited);
+    vector<int>leaders;
     for(int node  = 1 ; node <= n ; node++){
         if(!visited[node]){
             bfs(node,adjList,visited);
+            leaders.push_back(node);
         }
     }
-
-    cout << paths.size()-1 << endl;
-    for(int i = 0 ;  i< paths.size()-1 ; i++){
-        cout << paths[i][0] << " " << paths[i+1][0] << endl;
-        
+    cout << leaders.size() << endl;
+    for(int &leader :leaders ){
+        cout << 1 << " "<< leader << endl;
     }
+    
     
 
     
